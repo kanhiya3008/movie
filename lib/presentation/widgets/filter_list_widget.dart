@@ -27,6 +27,8 @@ class _FilterListWidgetState extends State<FilterListWidget> {
   String? selectedCategory;
   String? selectedValue;
   String? selectedLabel;
+  // Add field to store expanded items for genresV1
+  final Set<int> _expandedGenresItems = {};
 
   @override
   void initState() {
@@ -62,21 +64,24 @@ class _FilterListWidgetState extends State<FilterListWidget> {
               if (item is Map<String, dynamic>) {
                 Map<String, dynamic> option = {};
 
+                if (item.containsKey('name')) {
+                  // Handle objects with name structure (like genresV1)
+                  final name = item['name']?.toString() ?? '';
+                  final value = item['value']?.toString() ?? '';
+                  final subGenres = item['subGenres'] as List?;
+                  if (name.isNotEmpty) {
+                    option['label'] = name;
+                    option['value'] = value;
+                    option['subGenres'] = subGenres;
+                    options.add(option);
+                  }
+                }
                 // Handle objects with label/value structure
-                if (item.containsKey('label')) {
+                else if (item.containsKey('label')) {
                   final label = item['label']?.toString() ?? '';
                   final value = item['value']?.toString() ?? '';
                   if (label.isNotEmpty) {
                     option['label'] = label;
-                    option['value'] = value;
-                    options.add(option);
-                  }
-                } else if (item.containsKey('name')) {
-                  // Handle objects with name structure (like genresV1)
-                  final name = item['name']?.toString() ?? '';
-                  final value = item['value']?.toString() ?? '';
-                  if (name.isNotEmpty) {
-                    option['label'] = name;
                     option['value'] = value;
                     options.add(option);
                   }
@@ -334,6 +339,12 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                               tempSelectedValue,
                               tempSelectedLabel,
                               updateRadioSelection,
+                            )
+                          : category.toLowerCase() == 'genresv1'
+                          ? _buildGenresV1Filter(
+                              options,
+                              tempSelectedCheckboxes,
+                              updateCheckboxSelection,
                             )
                           : _buildDefaultFilter(
                               category,
@@ -1198,6 +1209,239 @@ class _FilterListWidgetState extends State<FilterListWidget> {
     );
   }
 
+  Widget _buildGenresV1Filter(
+    List<Map<String, dynamic>> options,
+    List<String> tempSelectedCheckboxes,
+    Function(String, bool) updateCheckboxSelection,
+  ) {
+    return StatefulBuilder(
+      builder: (context, setDialogState) => Column(
+        children: [
+          // Genres list with hierarchical structure (no search box)
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              shrinkWrap: true,
+              itemCount: options.length,
+              itemBuilder: (context, index) {
+                final option = options[index];
+                final label = option['label'] ?? '';
+                final value = option['value'] ?? '';
+                final subGenres = option['subGenres'] as List?;
+                final isSelected = tempSelectedCheckboxes.contains(value);
+                final isExpanded = _expandedGenresItems.contains(index);
+                final hasSubGenres = subGenres != null && subGenres.isNotEmpty;
+
+                // Check if all sub-genres are selected
+                bool allSubGenresSelected = false;
+                if (hasSubGenres) {
+                  allSubGenresSelected = subGenres.every((subGenre) {
+                    final subValue = subGenre['value']?.toString() ?? '';
+                    return tempSelectedCheckboxes.contains(subValue);
+                  });
+                }
+
+                // Function to handle parent selection/deselection
+                void handleParentSelection(bool selected) {
+                  if (selected) {
+                    // Select parent and all sub-genres
+                    updateCheckboxSelection(value, true);
+                    if (hasSubGenres) {
+                      for (var subGenre in subGenres) {
+                        final subValue = subGenre['value']?.toString() ?? '';
+                        if (subValue.isNotEmpty) {
+                          updateCheckboxSelection(subValue, true);
+                        }
+                      }
+                    }
+                  } else {
+                    // Deselect parent and all sub-genres
+                    updateCheckboxSelection(value, false);
+                    if (hasSubGenres) {
+                      for (var subGenre in subGenres) {
+                        final subValue = subGenre['value']?.toString() ?? '';
+                        if (subValue.isNotEmpty) {
+                          updateCheckboxSelection(subValue, false);
+                        }
+                      }
+                    }
+                  }
+                }
+
+                return Column(
+                  children: [
+                    // Parent category
+                    Container(
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.primary.withOpacity(0.1)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        leading: Checkbox(
+                          value: isSelected,
+                          onChanged: (checked) {
+                            handleParentSelection(checked == true);
+                          },
+                          activeColor: Colors.blue,
+                        ),
+                        title: Text(
+                          label,
+                          style: AppTypography.titleMedium.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: isSelected
+                                ? AppTypography.semiBold
+                                : AppTypography.medium,
+                          ),
+                        ),
+                        trailing: hasSubGenres
+                            ? IconButton(
+                                icon: Icon(
+                                  isExpanded
+                                      ? Icons.keyboard_arrow_up
+                                      : Icons.keyboard_arrow_down,
+                                  color: AppColors.textSecondary,
+                                ),
+                                onPressed: () {
+                                  setDialogState(() {
+                                    if (isExpanded) {
+                                      _expandedGenresItems.remove(index);
+                                    } else {
+                                      _expandedGenresItems.add(index);
+                                    }
+                                  });
+                                },
+                              )
+                            : null,
+                        onTap: () {
+                          handleParentSelection(!isSelected);
+                        },
+                      ),
+                    ),
+
+                    // Sub-categories (when expanded)
+                    if (isExpanded && hasSubGenres) ...[
+                      Container(
+                        margin: const EdgeInsets.only(left: 40, right: 8),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            left: BorderSide(
+                              color: AppColors.textSecondary.withOpacity(0.2),
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: subGenres.length,
+                          itemBuilder: (context, subIndex) {
+                            final subGenre = subGenres[subIndex];
+                            final subLabel = subGenre['label'] ?? '';
+                            final subValue = subGenre['value'] ?? '';
+                            final isSubSelected = tempSelectedCheckboxes
+                                .contains(subValue);
+
+                            return ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 4,
+                              ),
+                              leading: Checkbox(
+                                value: isSubSelected,
+                                onChanged: (checked) {
+                                  updateCheckboxSelection(
+                                    subValue,
+                                    checked == true,
+                                  );
+
+                                  // Update parent selection based on sub-genres
+                                  if (checked == true) {
+                                    // If any sub-genre is selected, select parent
+                                    if (!isSelected) {
+                                      updateCheckboxSelection(value, true);
+                                    }
+                                  } else {
+                                    // Check if any other sub-genres are still selected
+                                    bool anySubSelected = subGenres.any((sg) {
+                                      final sgValue =
+                                          sg['value']?.toString() ?? '';
+                                      return sgValue != subValue &&
+                                          tempSelectedCheckboxes.contains(
+                                            sgValue,
+                                          );
+                                    });
+
+                                    // If no sub-genres are selected, deselect parent
+                                    if (!anySubSelected && isSelected) {
+                                      updateCheckboxSelection(value, false);
+                                    }
+                                  }
+                                },
+                                activeColor: Colors.blue,
+                              ),
+                              title: Text(
+                                subLabel,
+                                style: AppTypography.bodyMedium.copyWith(
+                                  color: isSubSelected
+                                      ? AppColors.primary
+                                      : AppColors.textPrimary,
+                                  fontWeight: isSubSelected
+                                      ? AppTypography.semiBold
+                                      : AppTypography.medium,
+                                ),
+                              ),
+                              onTap: () {
+                                final newSubSelected = !isSubSelected;
+                                updateCheckboxSelection(
+                                  subValue,
+                                  newSubSelected,
+                                );
+
+                                // Update parent selection based on sub-genres
+                                if (newSubSelected) {
+                                  // If any sub-genre is selected, select parent
+                                  if (!isSelected) {
+                                    updateCheckboxSelection(value, true);
+                                  }
+                                } else {
+                                  // Check if any other sub-genres are still selected
+                                  bool anySubSelected = subGenres.any((sg) {
+                                    final sgValue =
+                                        sg['value']?.toString() ?? '';
+                                    return sgValue != subValue &&
+                                        tempSelectedCheckboxes.contains(
+                                          sgValue,
+                                        );
+                                  });
+
+                                  // If no sub-genres are selected, deselect parent
+                                  if (!anySubSelected && isSelected) {
+                                    updateCheckboxSelection(value, false);
+                                  }
+                                }
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDefaultFilter(
     String category,
     List<Map<String, dynamic>> options,
@@ -1326,11 +1570,38 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: TextField(
+                    style: AppTypography.titleMedium.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Search platforms...',
-                      prefixIcon: const Icon(Icons.search),
+                      hintStyle: AppTypography.titleMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: AppColors.textSecondary,
+                      ),
+                      filled: true,
+                      fillColor: AppColors.card,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: AppColors.textSecondary.withOpacity(0.3),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: AppColors.textSecondary.withOpacity(0.3),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: AppColors.primary,
+                          width: 2,
+                        ),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -1419,9 +1690,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                         title: Text(
                           name,
                           style: AppTypography.titleMedium.copyWith(
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.textPrimary,
+                            color: AppColors.textPrimary,
                             fontWeight: isSelected
                                 ? AppTypography.semiBold
                                 : AppTypography.medium,
@@ -1438,7 +1707,17 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                               }
                             });
                           },
-                          activeColor: AppColors.primaryLight,
+                          // Only show blue when checked, neutral otherwise
+                          activeColor: isSelected
+                              ? Colors.blue
+                              : AppColors.textSecondary.withOpacity(0.3),
+                          checkColor: Colors.white,
+                          side: BorderSide(
+                            color: isSelected
+                                ? Colors.blue
+                                : AppColors.textSecondary.withOpacity(0.3),
+                            width: 2,
+                          ),
                         ),
                         onTap: () {
                           setSearchState(() {
