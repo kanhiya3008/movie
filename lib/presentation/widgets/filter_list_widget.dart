@@ -121,15 +121,46 @@ class _FilterListWidgetState extends State<FilterListWidget> {
           _loadFilterCategories();
         }
 
+        // Hide 'genres' from the filter bar and reorder categories
+        final allCategories = filterCategories.keys
+            .where((k) => k.toLowerCase() != 'genres')
+            .toList();
+
+        // Define the desired order
+        final desiredOrder = [
+          'Availability',
+          'GenresV1',
+          'Languages',
+          'Ratings',
+          'ReleaseYears',
+          'Duration',
+          'AgeSuitability',
+        ];
+
+        // Sort categories according to desired order
+        final visibleCategories = <String>[];
+        for (String category in desiredOrder) {
+          if (allCategories.contains(category)) {
+            visibleCategories.add(category);
+          }
+        }
+
+        // Add any remaining categories that weren't in the desired order
+        for (String category in allCategories) {
+          if (!visibleCategories.contains(category)) {
+            visibleCategories.add(category);
+          }
+        }
+
         return Container(
           height: 40,
           margin: const EdgeInsets.symmetric(vertical: 8),
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: filterCategories.length,
+            itemCount: visibleCategories.length,
             itemBuilder: (context, index) {
-              final categoryName = filterCategories.keys.elementAt(index);
+              final categoryName = visibleCategories[index];
               final isSelected = selectedCategory == categoryName;
 
               return Container(
@@ -344,6 +375,15 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                           ? _buildGenresV1Filter(
                               options,
                               tempSelectedCheckboxes,
+                              updateCheckboxSelection,
+                            )
+                          : category.toLowerCase() == 'agesuitability'
+                          ? _buildAgeSuitabilityFilter(
+                              options,
+                              tempSelectedValue,
+                              tempSelectedLabel,
+                              tempSelectedCheckboxes,
+                              updateRadioSelection,
                               updateCheckboxSelection,
                             )
                           : _buildDefaultFilter(
@@ -1388,9 +1428,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                               title: Text(
                                 subLabel,
                                 style: AppTypography.bodyMedium.copyWith(
-                                  color: isSubSelected
-                                      ? AppColors.primary
-                                      : AppColors.textPrimary,
+                                  color: AppColors.textPrimary,
                                   fontWeight: isSubSelected
                                       ? AppTypography.semiBold
                                       : AppTypography.medium,
@@ -1437,6 +1475,159 @@ class _FilterListWidgetState extends State<FilterListWidget> {
               },
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAgeSuitabilityFilter(
+    List<Map<String, dynamic>> options,
+    String? tempSelectedValue,
+    String? tempSelectedLabel,
+    List<String> tempSelectedCheckboxes,
+    Function(String?, String?) updateRadioSelection,
+    Function(String, bool) updateCheckboxSelection,
+  ) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Top 4s as radio buttons
+          Text(
+            'Age Suitability',
+            style: AppTypography.titleMedium.copyWith(
+              fontWeight: AppTypography.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Top 4s as radio buttons
+          ...options
+              .take(4)
+              .where((option) {
+                final label = option['label']?.toString().toLowerCase() ?? '';
+                // Exclude R and NC-17 from top4hey will be merged
+                return !label.contains('r') && !label.contains('nc-17');
+              })
+              .map((option) {
+                final label = option['label'] ?? '';
+                final value = option['value'] ?? '';
+                final isSelected = tempSelectedValue == value;
+
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Radio<String>(
+                    value: value,
+                    groupValue: tempSelectedValue,
+                    onChanged: (newValue) {
+                      updateRadioSelection(newValue, label);
+                    },
+                    activeColor: Colors.blue,
+                  ),
+                  title: Text(
+                    label,
+                    style: AppTypography.titleMedium.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: AppTypography.medium,
+                    ),
+                  ),
+                  onTap: () {
+                    updateRadioSelection(value, label);
+                  },
+                );
+              })
+              .toList(),
+
+          // Merged R & NC-17 radio button
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Radio<String>(
+              value: 'r_nc17',
+              groupValue: tempSelectedValue,
+              onChanged: (newValue) {
+                updateRadioSelection(newValue, 'R & NC-17');
+              },
+              activeColor: Colors.blue,
+            ),
+            title: Text(
+              'R & NC-17',
+              style: AppTypography.titleMedium.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: AppTypography.medium,
+              ),
+            ),
+            onTap: () {
+              updateRadioSelection('r_nc17', 'R & NC-17');
+            },
+          ),
+
+          // Set Custom" radio button
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Radio<String>(
+              value: 'custom',
+              groupValue: tempSelectedValue,
+              onChanged: (newValue) {
+                updateRadioSelection(newValue, 'Set Custom');
+              },
+              activeColor: Colors.blue,
+            ),
+            title: Text(
+              'Set Custom',
+              style: AppTypography.titleMedium.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: AppTypography.medium,
+              ),
+            ),
+            onTap: () {
+              updateRadioSelection('custom', 'Set Custom');
+            },
+          ),
+
+          const SizedBox(height: 12),
+
+          // All remaining options as checkboxes - only show when custom is selected
+          if (tempSelectedValue == 'custom') ...[
+            ...options
+                .where((option) {
+                  final label = (option['label'] ?? '')
+                      .toString()
+                      .toLowerCase();
+                  // Exclude NC-17, G, and PG-13 from checkboxes
+                  return !label.contains('nc-17') &&
+                      !label.contains('g') &&
+                      !label.contains('pg-13');
+                })
+                .map((option) {
+                  final label = option['label'] ?? '';
+                  final value = option['value'] ?? '';
+                  final isSelected = tempSelectedCheckboxes.contains(value);
+
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Checkbox(
+                      value: isSelected,
+                      onChanged: (checked) {
+                        updateCheckboxSelection(value, checked == true);
+                      },
+                      activeColor: Colors.blue,
+                    ),
+                    title: Text(
+                      label,
+                      style: AppTypography.titleMedium.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: AppTypography.medium,
+                      ),
+                    ),
+                    onTap: () {
+                      updateCheckboxSelection(value, !isSelected);
+                    },
+                  );
+                })
+                .toList(),
+          ],
         ],
       ),
     );

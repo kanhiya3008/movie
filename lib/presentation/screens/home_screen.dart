@@ -111,49 +111,6 @@ class _HomeScreenState extends State<HomeScreen> {
         color: AppColors.background,
         child: Column(
           children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                gradient: AppColors.backgroundGradient,
-              ),
-              child: SafeArea(
-                child: Column(
-                  children: [
-                    // App Logo
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.movie,
-                        color: AppColors.textInverse,
-                        size: 30,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      AppConstants.appName,
-                      style: AppTypography.titleLarge.copyWith(
-                        fontWeight: AppTypography.bold,
-                        color: AppColors.textInverse,
-                      ),
-                    ),
-                    Text(
-                      AppConstants.appDescription,
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textInverse.withOpacity(0.8),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
             // Menu Items
             Expanded(
               child: ListView(
