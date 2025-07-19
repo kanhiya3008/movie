@@ -10,11 +10,10 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 void showYoutubePopup1(BuildContext context, String videoId) {
   String id = extractYoutubeId(videoId);
-  final String youtubeUrl =
-      'https://www.youtube.com/embed/$id?autoplay=1&mute=1';
+  
   final WebViewController controller = WebViewController()
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    ..loadRequest(Uri.parse(youtubeUrl));
+    ..loadHtmlString(_getYouTubeEmbedHTML(id));
 
   showDialog(
     context: context,
@@ -40,6 +39,53 @@ void showYoutubePopup1(BuildContext context, String videoId) {
       );
     },
   );
+}
+
+String _getYouTubeEmbedHTML(String videoId) {
+  return '''
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            max-width: 100vw;
+            max-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/$videoId?autoplay=1&mute=1&rel=0&modestbranding=1&showinfo=0&controls=1&fs=1"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+        </iframe>
+    </div>
+</body>
+</html>
+    ''';
 }
 
 Widget buildMovieTab(

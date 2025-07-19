@@ -49,7 +49,7 @@ class MovieCard extends StatelessWidget {
               : null),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -67,7 +67,7 @@ class MovieCard extends StatelessWidget {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(12),
+                    top: Radius.circular(8),
                   ),
                   color: AppColors.card,
                 ),
@@ -76,7 +76,7 @@ class MovieCard extends StatelessWidget {
                     // Image
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(12),
+                        top: Radius.circular(8),
                       ),
                       child: CachedNetworkImage(
                         imageUrl: posterPath,
@@ -204,7 +204,7 @@ class MovieCard extends StatelessWidget {
               decoration: const BoxDecoration(
                 color: AppColors.card,
                 borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(12),
+                  bottom: Radius.circular(8),
                 ),
               ),
               child: Column(

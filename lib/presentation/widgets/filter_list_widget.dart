@@ -1698,6 +1698,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
 
     showDialog(
       context: context,
+      barrierDismissible: true,
       builder: (context) => StatefulBuilder(
         builder: (context, setSearchState) => Dialog(
           backgroundColor: Colors.transparent,

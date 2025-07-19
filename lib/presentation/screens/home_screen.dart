@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   final List<String> _screenTitles = [
-    'Home',
+    'StreamNest',
     'Feed',
     'Movies',
     'Like',
@@ -49,13 +49,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _screenTitles[_currentIndex],
-          style: AppTypography.titleLarge.copyWith(
-            fontWeight: AppTypography.bold,
-          ),
-        ),
-        centerTitle: true,
+        
+        title: _currentIndex == 0
+            ? Image.asset(
+                'assets/Streamnest-01.png',
+                height: 32,
+                fit: BoxFit.contain,
+              )
+            : Text(
+                _screenTitles[_currentIndex],
+                style: AppTypography.titleLarge.copyWith(
+                  fontWeight: AppTypography.bold,
+                ),
+              ),
+        centerTitle: false,
         actions: [
           // Search Button
           IconButton(
@@ -694,7 +701,7 @@ class _HomeContentState extends State<HomeContent>
                 itemBuilder: (context, index) {
                   final movie = collection.movies[index];
                   return Container(
-                    width: 180,
+                    width: MediaQuery.of(context).size.width * 0.35,
                     margin: EdgeInsets.only(
                       right: 16,
                       left: index == 0 ? 0 : 0,
@@ -723,7 +730,7 @@ class _HomeContentState extends State<HomeContent>
             opacity: value,
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(8),
                 color: AppColors.card,
                 boxShadow: [
                   BoxShadow(
@@ -851,7 +858,7 @@ class _HomeContentState extends State<HomeContent>
             opacity: value,
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(3),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
@@ -861,7 +868,7 @@ class _HomeContentState extends State<HomeContent>
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(3),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -1127,30 +1134,74 @@ class _HomeContentState extends State<HomeContent>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Carousel
+          // Carousel with navigation arrows
           Container(
             height:
                 MediaQuery.of(context).size.height *
                 0.78, // 78% of screen height
             //  padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
+            child: Stack(
               children: [
                 // PageView with auto-sliding
-                Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    itemCount: featuredMovies.length,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentCarouselIndex = index;
-                      });
-                    },
-                    itemBuilder: (context, index) {
-                      final movie = featuredMovies[index];
-                      return _buildCarouselItem(movie);
-                    },
-                  ),
+                PageView.builder(
+                  controller: _pageController,
+                  itemCount: featuredMovies.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentCarouselIndex = index;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    final movie = featuredMovies[index];
+                    return _buildCarouselItem(movie);
+                  },
                 ),
+                
+                // Left Arrow Button
+                if (_currentCarouselIndex > 0)
+                  Positioned(
+                    left: 16,
+                    top: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          _pageController.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        child: const Icon(
+                          Icons.chevron_left,
+                          color: AppColors.textPrimary,
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                  ),
+                
+                // Right Arrow Button
+                if (_currentCarouselIndex < featuredMovies.length - 1)
+                  Positioned(
+                    right: 16,
+                    top: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        child: const Icon(
+                          Icons.chevron_right,
+                          color: AppColors.textPrimary,
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -1177,7 +1228,7 @@ class _HomeContentState extends State<HomeContent>
     return Container(
       margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withOpacity(0.2),
@@ -1187,7 +1238,7 @@ class _HomeContentState extends State<HomeContent>
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
         child: SingleChildScrollView(
           physics: const NeverScrollableScrollPhysics(),
           child: buildMovieTab(movie, false, null, context),
