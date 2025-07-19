@@ -49,7 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        
         title: _currentIndex == 0
             ? Image.asset(
                 'assets/Streamnest-01.png',
@@ -335,8 +334,17 @@ class _HomeContentState extends State<HomeContent>
       // Then load the data
       context.read<MovieProvider>().loadAllCollections();
 
-      // Load featured movies for carousel
-      context.read<MovieProvider>().loadFeaturedMovies();
+      // Load hero filter movies for carousel
+      final defaultFilterParams = {
+        "ageSuitability": null,
+        "availability": null,
+        "duration": null,
+        "genre": null,
+        "languages": null,
+        "rating": null,
+        "releaseYear": null,
+      };
+      context.read<MovieProvider>().loadHeroFilterMovies(defaultFilterParams);
     });
   }
 
@@ -350,8 +358,51 @@ class _HomeContentState extends State<HomeContent>
     // Here you can implement the logic to filter movies based on the selected category, label and value
     print('Selected filter: $category - $label ($value)');
 
-    // Example: You could call a method to filter movies
-    // context.read<MovieProvider>().filterMoviesByCategory(category, value);
+    // Build filter parameters for hero API call
+    final filterParams = _buildFilterParams(category, value);
+
+    // Call hero filter API with the selected filters
+    context.read<MovieProvider>().loadHeroFilterMovies(filterParams);
+  }
+
+  Map<String, dynamic> _buildFilterParams(String category, String value) {
+    // Start with default filter params
+    final filterParams = <String, dynamic>{
+      "ageSuitability": null,
+      "availability": null,
+      "duration": null,
+      "genre": null,
+      "languages": null,
+      "rating": null,
+      "releaseYear": null,
+    };
+
+    // Update the appropriate filter based on the selected category
+    switch (category.toLowerCase()) {
+      case 'agesuitability':
+        filterParams['ageSuitability'] = value;
+        break;
+      case 'availability':
+        filterParams['availability'] = value;
+        break;
+      case 'duration':
+        filterParams['duration'] = value;
+        break;
+      case 'genresv1':
+        filterParams['genre'] = value;
+        break;
+      case 'languages':
+        filterParams['languages'] = value;
+        break;
+      case 'ratings':
+        filterParams['rating'] = value;
+        break;
+      case 'releaseyears':
+        filterParams['releaseYear'] = value;
+        break;
+    }
+
+    return filterParams;
   }
 
   @override
@@ -458,38 +509,6 @@ class _HomeContentState extends State<HomeContent>
 
         return CustomScrollView(
           slivers: [
-            // Hero Section
-            // SliverToBoxAdapter(
-            //   child: FadeTransition(
-            //     opacity: _fadeAnimation,
-            //     child: SlideTransition(
-            //       position: _slideAnimation,
-            //       child: Container(
-            //         margin: const EdgeInsets.all(16),
-            //         padding: const EdgeInsets.all(24),
-            //         decoration: BoxDecoration(
-            //           gradient: LinearGradient(
-            //             begin: Alignment.topLeft,
-            //             end: Alignment.bottomRight,
-            //             colors: [
-            //               AppColors.primary.withOpacity(0.9),
-            //               AppColors.accent.withOpacity(0.7),
-            //             ],
-            //           ),
-            //           borderRadius: BorderRadius.circular(20),
-            //           boxShadow: [
-            //             BoxShadow(
-            //               color: AppColors.primary.withOpacity(0.3),
-            //               blurRadius: 20,
-            //               offset: const Offset(0, 10),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-
             // Filter List Widget
             SliverToBoxAdapter(
               child: FadeTransition(
@@ -1106,8 +1125,13 @@ class _HomeContentState extends State<HomeContent>
       );
     }
 
-    // Use featured movies from API, fallback to first collection if empty
-    List<Movie> featuredMovies = movieProvider.featuredMovies;
+    // Use hero filter movies from API, fallback to featured movies if empty
+    List<Movie> featuredMovies = movieProvider.heroFilterMovies;
+
+    if (featuredMovies.isEmpty) {
+      // Fallback to featured movies
+      featuredMovies = movieProvider.featuredMovies;
+    }
 
     if (featuredMovies.isEmpty && movieProvider.collections.isNotEmpty) {
       // Fallback to first collection's movies
@@ -1156,7 +1180,7 @@ class _HomeContentState extends State<HomeContent>
                     return _buildCarouselItem(movie);
                   },
                 ),
-                
+
                 // Left Arrow Button
                 if (_currentCarouselIndex > 0)
                   Positioned(
@@ -1179,7 +1203,7 @@ class _HomeContentState extends State<HomeContent>
                       ),
                     ),
                   ),
-                
+
                 // Right Arrow Button
                 if (_currentCarouselIndex < featuredMovies.length - 1)
                   Positioned(

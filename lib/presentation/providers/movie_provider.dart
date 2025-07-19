@@ -31,6 +31,11 @@ class MovieProvider extends ChangeNotifier {
   bool _isLoadingFeatured = false;
   String? _featuredError;
 
+  // Hero filter movies state
+  List<Movie> _heroFilterMovies = [];
+  bool _isLoadingHeroFilter = false;
+  String? _heroFilterError;
+
   MovieProvider({MovieRepository? repository})
     : _repository = repository ?? MovieRepository();
 
@@ -59,6 +64,11 @@ class MovieProvider extends ChangeNotifier {
   List<Movie> get featuredMovies => _featuredMovies;
   bool get isLoadingFeatured => _isLoadingFeatured;
   String? get featuredError => _featuredError;
+
+  // Hero filter movies getters
+  List<Movie> get heroFilterMovies => _heroFilterMovies;
+  bool get isLoadingHeroFilter => _isLoadingHeroFilter;
+  String? get heroFilterError => _heroFilterError;
 
   /// Load all collection endpoints
   Future<void> loadCollectionEndpoints() async {
@@ -163,6 +173,21 @@ class MovieProvider extends ChangeNotifier {
     }
   }
 
+  /// Load hero filter movies
+  Future<void> loadHeroFilterMovies(Map<String, dynamic> filterParams) async {
+    _setLoadingHeroFilter(true);
+    _clearHeroFilterError();
+
+    try {
+      _heroFilterMovies = await _repository.fetchHeroFilterMovies(filterParams);
+      notifyListeners();
+    } catch (e) {
+      _setHeroFilterError(e.toString());
+    } finally {
+      _setLoadingHeroFilter(false);
+    }
+  }
+
   /// Clear error
   void _clearError() {
     _error = null;
@@ -240,6 +265,22 @@ class MovieProvider extends ChangeNotifier {
   /// Set featured movies loading state
   void _setLoadingFeatured(bool loading) {
     _isLoadingFeatured = loading;
+    notifyListeners();
+  }
+
+  /// Clear hero filter error
+  void _clearHeroFilterError() {
+    _heroFilterError = null;
+  }
+
+  /// Set hero filter error
+  void _setHeroFilterError(String error) {
+    _heroFilterError = error;
+  }
+
+  /// Set hero filter loading state
+  void _setLoadingHeroFilter(bool loading) {
+    _isLoadingHeroFilter = loading;
     notifyListeners();
   }
 }

@@ -10,7 +10,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 void showYoutubePopup1(BuildContext context, String videoId) {
   String id = extractYoutubeId(videoId);
-  
+
   final WebViewController controller = WebViewController()
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
     ..loadHtmlString(_getYouTubeEmbedHTML(id));
@@ -94,6 +94,7 @@ Widget buildMovieTab(
   String? error,
   BuildContext context,
 ) {
+  final ScrollController streamingScrollController = ScrollController();
   if (isLoading) {
     return const Center(child: CircularProgressIndicator());
   }
@@ -247,33 +248,26 @@ Widget buildMovieTab(
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(5),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Icon(
-                                  Icons.star,
+                                  Icons.people,
                                   size: 16,
                                   color: Colors.white,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '8.5',
+                                  '${movie.audienceRating}',
                                   style: AppTypography.labelMedium.copyWith(
                                     color: Colors.white,
                                     fontWeight: AppTypography.semiBold,
                                   ),
                                 ),
                               ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Rating',
-                            style: AppTypography.bodyMedium.copyWith(
-                              color: AppColors.textSecondary,
                             ),
                           ),
                         ],
@@ -284,13 +278,32 @@ Widget buildMovieTab(
                       // Star Rating View
                       Row(
                         children: List.generate(5, (index) {
-                          return Icon(
-                            index < 4 ? Icons.star : Icons.star_border,
-                            size: 20,
-                            color: index < 4
-                                ? Colors.amber
-                                : AppColors.textSecondary,
-                          );
+                          final ratingOutOf10 =
+                              double.tryParse(movie.audienceRating) ?? 0.0;
+                          final ratingOutOf5 =
+                              ratingOutOf10 /
+                              2; // Convert from 10-point to 5-star scale
+                          final filledStars = ratingOutOf5.floor();
+                          final hasHalfStar = ratingOutOf5 - filledStars >= 0.5;
+
+                          IconData starIcon;
+                          Color starColor;
+
+                          if (index < filledStars) {
+                            // Fully filled star
+                            starIcon = Icons.star;
+                            starColor = Colors.amber;
+                          } else if (index == filledStars && hasHalfStar) {
+                            // Half filled star
+                            starIcon = Icons.star_half;
+                            starColor = Colors.amber;
+                          } else {
+                            // Empty star
+                            starIcon = Icons.star_border;
+                            starColor = AppColors.textSecondary;
+                          }
+
+                          return Icon(starIcon, size: 20, color: starColor);
                         }),
                       ),
 
@@ -321,13 +334,6 @@ Widget buildMovieTab(
                                     color: AppColors.textPrimary,
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(
-                                    'Seen',
-                                    style: AppTypography.labelSmall.copyWith(
-                                      color: AppColors.textPrimary,
-                                      fontWeight: AppTypography.medium,
-                                    ),
-                                  ),
                                 ],
                               ),
                             ),
@@ -359,13 +365,6 @@ Widget buildMovieTab(
                                     color: AppColors.textPrimary,
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(
-                                    'Interest',
-                                    style: AppTypography.labelSmall.copyWith(
-                                      color: AppColors.textPrimary,
-                                      fontWeight: AppTypography.medium,
-                                    ),
-                                  ),
                                 ],
                               ),
                             ),
@@ -397,13 +396,6 @@ Widget buildMovieTab(
                                     color: AppColors.textPrimary,
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(
-                                    'Watch List',
-                                    style: AppTypography.labelSmall.copyWith(
-                                      color: AppColors.textPrimary,
-                                      fontWeight: AppTypography.medium,
-                                    ),
-                                  ),
                                 ],
                               ),
                             ),
@@ -480,7 +472,6 @@ Widget buildMovieTab(
                         );
                       }
                     },
-                    icon: const Icon(Icons.play_arrow, size: 20),
                     label: Text(
                       'Watch Trailer',
                       style: AppTypography.labelMedium.copyWith(
@@ -508,7 +499,6 @@ Widget buildMovieTab(
                       //   3,
                       // ); // Switch to Similar Movies tab
                     },
-                    icon: const Icon(Icons.movie, size: 20),
                     label: Text(
                       'See Similar',
                       style: AppTypography.labelMedium.copyWith(
@@ -530,68 +520,99 @@ Widget buildMovieTab(
             ),
           ],
         ),
-        // Cast Preview - Stacked Layout
-        if (movie.cast.isNotEmpty) ...[
-          SizedBox(height: MediaQuery.of(context).size.width < 360 ? 12 : 16),
-          Text(
-            'Cast',
-            style: AppTypography.titleMedium.copyWith(
-              fontWeight: AppTypography.bold,
-            ),
-          ),
-          SizedBox(height: MediaQuery.of(context).size.width < 360 ? 6 : 8),
+        // Cast Preview and Streaming OTT - Row Layout
+        if (movie.cast.isNotEmpty || movie.streamingPlatforms.isNotEmpty) ...[
+          SizedBox(height: 16),
 
-          SizedBox(
-            height: 80,
-            child: Stack(
-              children: [
-                // First 3 cast members
-                ...movie.cast.take(3).toList().asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final castMember = entry.value;
-                  final screenWidth = MediaQuery.of(context).size.width;
-                  final avatarSpacing = screenWidth < 360
-                      ? 28.0
-                      : screenWidth < 480
-                      ? 32.0
-                      : 35.0;
-                  final offset = index * avatarSpacing;
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Cast Preview - Left Side
+              if (movie.cast.isNotEmpty) ...[
+                SizedBox(
+                  height: 80,
+                  width: MediaQuery.of(context).size.width / 2.4,
 
-                  return Positioned(
-                    left: offset,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.background,
-                          width: 3,
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        radius: MediaQuery.of(context).size.width < 360
-                            ? 25
-                            : MediaQuery.of(context).size.width < 480
-                            ? 28
-                            : 30,
-                        backgroundColor: AppColors.primaryLight,
-                        child: castMember.person.profilePath != null
-                            ? ClipOval(
-                                child: Image.network(
-                                  "https://image.tmdb.org/t/p/original${castMember.person.profilePath}",
-                                  fit: BoxFit.cover,
-                                  width: MediaQuery.of(context).size.width < 360
-                                      ? 50
-                                      : MediaQuery.of(context).size.width < 480
-                                      ? 56
-                                      : 60,
-                                  height:
-                                      MediaQuery.of(context).size.width < 360
-                                      ? 50
-                                      : MediaQuery.of(context).size.width < 480
-                                      ? 56
-                                      : 60,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Text(
+                  child: Stack(
+                    children: [
+                      // First 3 cast members
+                      ...movie.cast.take(3).toList().asMap().entries.map((
+                        entry,
+                      ) {
+                        final index = entry.key;
+                        final castMember = entry.value;
+                        final screenWidth = MediaQuery.of(context).size.width;
+                        final avatarSpacing = screenWidth < 360
+                            ? 32.0
+                            : screenWidth < 480
+                            ? 36.0
+                            : 40.0;
+                        final offset = index * avatarSpacing;
+
+                        return Positioned(
+                          left: offset,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.background,
+                                width: 3,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: MediaQuery.of(context).size.width < 360
+                                  ? 25
+                                  : MediaQuery.of(context).size.width < 480
+                                  ? 28
+                                  : 32,
+                              backgroundColor: AppColors.primaryLight,
+                              child: castMember.person.profilePath != null
+                                  ? ClipOval(
+                                      child: Image.network(
+                                        "https://image.tmdb.org/t/p/original${castMember.person.profilePath}",
+                                        fit: BoxFit.cover,
+                                        width:
+                                            MediaQuery.of(context).size.width <
+                                                360
+                                            ? 50
+                                            : MediaQuery.of(
+                                                    context,
+                                                  ).size.width <
+                                                  480
+                                            ? 56
+                                            : 64,
+                                        height:
+                                            MediaQuery.of(context).size.width <
+                                                360
+                                            ? 50
+                                            : MediaQuery.of(
+                                                    context,
+                                                  ).size.width <
+                                                  480
+                                            ? 56
+                                            : 64,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                              return Text(
+                                                castMember
+                                                        .person
+                                                        .name
+                                                        .isNotEmpty
+                                                    ? castMember.person.name[0]
+                                                          .toUpperCase()
+                                                    : '?',
+                                                style: AppTypography.labelMedium
+                                                    .copyWith(
+                                                      color:
+                                                          AppColors.textPrimary,
+                                                      fontWeight: AppTypography
+                                                          .semiBold,
+                                                    ),
+                                              );
+                                            },
+                                      ),
+                                    )
+                                  : Text(
                                       castMember.person.name.isNotEmpty
                                           ? castMember.person.name[0]
                                                 .toUpperCase()
@@ -600,68 +621,200 @@ Widget buildMovieTab(
                                         color: AppColors.textPrimary,
                                         fontWeight: AppTypography.semiBold,
                                       ),
-                                    );
-                                  },
-                                ),
-                              )
-                            : Text(
-                                castMember.person.name.isNotEmpty
-                                    ? castMember.person.name[0].toUpperCase()
-                                    : '?',
+                                    ),
+                            ),
+                          ),
+                        );
+                      }),
+
+                      // +X remaining indicator
+                      if (movie.cast.length > 3)
+                        Positioned(
+                          left: MediaQuery.of(context).size.width < 360
+                              ? 96.0
+                              : MediaQuery.of(context).size.width < 480
+                              ? 108.0
+                              : 120.0, // Responsive position
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.background,
+                                width: 3,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: MediaQuery.of(context).size.width < 360
+                                  ? 25
+                                  : MediaQuery.of(context).size.width < 480
+                                  ? 28
+                                  : 32,
+                              backgroundColor: AppColors.primaryLight,
+                              child: Text(
+                                '+${movie.cast.length - 3}',
                                 style: AppTypography.labelMedium.copyWith(
                                   color: AppColors.textPrimary,
-                                  fontWeight: AppTypography.semiBold,
+                                  fontWeight: AppTypography.bold,
                                 ),
                               ),
-                      ),
-                    ),
-                  );
-                }),
-
-                // +X remaining indicator
-                if (movie.cast.length > 3)
-                  Positioned(
-                    left: MediaQuery.of(context).size.width < 360
-                        ? 84.0
-                        : MediaQuery.of(context).size.width < 480
-                        ? 96.0
-                        : 105.0, // Responsive position
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.background,
-                          width: 3,
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        radius: MediaQuery.of(context).size.width < 360
-                            ? 25
-                            : MediaQuery.of(context).size.width < 480
-                            ? 28
-                            : 30,
-                        backgroundColor: AppColors.primaryLight,
-                        child: Text(
-                          '+${movie.cast.length - 3}',
-                          style: AppTypography.labelMedium.copyWith(
-                            color: AppColors.textPrimary,
-                            fontWeight: AppTypography.bold,
+                            ),
                           ),
                         ),
-                      ),
+                    ],
+                  ),
+                ),
+              ],
+
+              // Streaming OTT Platforms - Right Side
+              if (movie.streamingPlatforms.isNotEmpty) ...[
+                const SizedBox(width: 16),
+                Expanded(
+                  child: SizedBox(
+                    height: 80,
+                    child: Stack(
+                      children: [
+                        ListView.builder(
+                          key: const PageStorageKey('streaming_platforms'),
+                          controller: streamingScrollController,
+                          scrollDirection: Axis.horizontal,
+                          reverse: true, // Show from right to left
+                          itemCount: movie.streamingPlatforms.length,
+                          itemBuilder: (context, index) {
+                            final platform = movie.streamingPlatforms[index];
+                            return Container(
+                              width: 50,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: AppColors.primary.withOpacity(0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              padding: const EdgeInsets.all(4),
+                              child: Column(
+                                children: [
+                                  // Platform Icon
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(4),
+                                      border: Border.all(
+                                        color: AppColors.primary.withOpacity(
+                                          0.3,
+                                        ),
+                                        width: 1,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(4),
+                                      child:
+                                          platform.platform?.logo != null &&
+                                              platform.platform!.logo.isNotEmpty
+                                          ? Image.network(
+                                              platform.platform!.logo,
+                                              fit: BoxFit.contain,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                    return Container(
+                                                      color: AppColors.primary
+                                                          .withOpacity(0.1),
+                                                      child: Center(
+                                                        child: Icon(
+                                                          Icons.tv,
+                                                          size: 20,
+                                                          color:
+                                                              AppColors.primary,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                            )
+                                          : Container(
+                                              color: AppColors.primary
+                                                  .withOpacity(0.1),
+                                              child: Center(
+                                                child: Icon(
+                                                  Icons.tv,
+                                                  size: 20,
+                                                  color: AppColors.primary,
+                                                ),
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  // Platform Type Text
+                                  Text(
+                                    (platform.type ?? '').isNotEmpty
+                                        ? '${platform.type![0].toUpperCase()}${platform.type!.substring(1).toLowerCase()}'
+                                        : '',
+                                    style: AppTypography.labelSmall.copyWith(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 10,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        // Arrow Button - Right Side
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                          child: Container(
+                            width: 30,
+
+                            child: Center(
+                              child: Container(
+                                width: 24,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  color: Colors.black45,
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    // Scroll to the left (show more platforms since ListView is reversed)
+                                    streamingScrollController.animateTo(
+                                      streamingScrollController.offset - 100,
+                                      duration: const Duration(
+                                        milliseconds: 300,
+                                      ),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 12,
+                                    color: Colors.white,
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                ),
               ],
-            ),
+            ],
           ),
-
-          //  const SizedBox(height: 8),
-          // Text(
-          //   '${movie.cast.length} cast members',
-          //   style: AppTypography.labelSmall.copyWith(
-          //     color: AppColors.textSecondary,
-          //   ),
-          // ),
         ],
 
         SizedBox(height: MediaQuery.of(context).size.width < 360 ? 12 : 16),
@@ -752,47 +905,7 @@ Widget buildMovieTab(
         //     ),
         //   ),
         // ],
-
-        // const SizedBox(height: 24),
-
-        // // Streaming Platforms
-        // if (movie.streamingPlatforms.isNotEmpty) ...[
-        //   Text(
-        //     'Available On',
-        //     style: AppTypography.titleMedium.copyWith(
-        //       fontWeight: AppTypography.bold,
-        //     ),
-        //   ),
-        //   const SizedBox(height: 8),
-        //   Wrap(
-        //     spacing: 8,
-        //     runSpacing: 8,
-        //     children: movie.streamingPlatforms
-        //         .take(5)
-        //         .map(
-        //           (platform) => Container(
-        //             padding: const EdgeInsets.symmetric(
-        //               horizontal: 12,
-        //               vertical: 6,
-        //             ),
-        //             decoration: BoxDecoration(
-        //               color: AppColors.accent.withOpacity(0.1),
-        //               borderRadius: BorderRadius.circular(20),
-        //               border: Border.all(
-        //                 color: AppColors.accent.withOpacity(0.3),
-        //               ),
-        //             ),
-        //             child: Text(
-        //               platform.platform?.name ?? 'Unknown',
-        //               style: AppTypography.labelSmall.copyWith(
-        //                 color: AppColors.accent,
-        //               ),
-        //             ),
-        //           ),
-        //         )
-        //         .toList(),
-        //   ),
-        // ],
+        const SizedBox(height: 24),
       ],
     ),
   );

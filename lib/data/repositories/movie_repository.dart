@@ -169,4 +169,39 @@ class MovieRepository {
       throw Exception("Network error: $e");
     }
   }
+
+  /// Fetch hero filter movies
+  Future<List<Movie>> fetchHeroFilterMovies(
+    Map<String, dynamic> filterParams,
+  ) async {
+    try {
+      final response = await _apiService.getHeroFilterMovies(filterParams);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = response.data;
+
+        if (data != null &&
+            data is Map<String, dynamic> &&
+            data['movies'] != null) {
+          final List<dynamic> moviesData = data['movies'];
+          return moviesData.map((json) => Movie.fromJson(json)).toList();
+        } else {
+          // If the API returns a different format, try to parse as a list
+          if (data is List) {
+            return data.map((json) => Movie.fromJson(json)).toList();
+          }
+          throw Exception(
+            "Invalid hero filter movies data format received from server.",
+          );
+        }
+      } else {
+        throw Exception(
+          "Failed to fetch hero filter movies: ${response.statusCode}",
+        );
+      }
+    } catch (e) {
+      print('Error in repository for hero filter movies: $e');
+      throw Exception("Network error: $e");
+    }
+  }
 }

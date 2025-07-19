@@ -94,4 +94,19 @@ class StreamNestApiService {
       rethrow;
     }
   }
+
+  /// Fetch hero filter movies
+  Future<Response> getHeroFilterMovies(
+    Map<String, dynamic> filterParams,
+  ) async {
+    try {
+      print('Fetching hero filter movies');
+      print('URL: https://api.streamnest.tv/movies/filter/hero');
+      print('Filter params: $filterParams');
+      return await _dio.post('/movies/filter/hero', data: filterParams);
+    } catch (e) {
+      print('DioException for hero filter movies: $e');
+      rethrow;
+    }
+  }
 }
