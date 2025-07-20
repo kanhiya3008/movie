@@ -113,6 +113,52 @@ class MovieProvider extends ChangeNotifier {
     }
   }
 
+  /// Load all collections with filter parameters
+  Future<void> loadAllCollectionsWithFilters(
+    Map<String, dynamic> filterParams,
+  ) async {
+    setLoading(true);
+    _clearError();
+
+    print('🎯 Filter parameters received: $filterParams');
+
+    try {
+      // First get all collection endpoints
+      print('🔍 Fetching collection endpoints from user_collections API...');
+      _collectionEndpoints = await _repository.fetchCollectionEndpoints();
+      print(
+        '📋 Found ${_collectionEndpoints.length} collection endpoints: $_collectionEndpoints',
+      );
+
+      // Then fetch each collection with filters
+      print('🚀 Starting to fetch all collections with filters...');
+      for (final endpoint in _collectionEndpoints) {
+        try {
+          print('📡 Calling fetchCollection for endpoint: $endpoint');
+          final collection = await _repository.fetchCollection(
+            endpoint,
+            filterParams: filterParams,
+          );
+          _collections[endpoint] = collection;
+          print('✅ Successfully fetched collection for: $endpoint');
+        } catch (e) {
+          print('❌ Error fetching collection $endpoint: $e');
+          // Continue with other collections even if one fails
+        }
+      }
+
+      print(
+        '🎉 All collections fetched! Total collections: ${_collections.length}',
+      );
+      notifyListeners();
+    } catch (e) {
+      print('💥 Error in loadAllCollectionsWithFilters: $e');
+      _setError(e.toString());
+    } finally {
+      setLoading(false);
+    }
+  }
+
   /// Load movie details by slug
   Future<void> loadMovieDetails(String slug) async {
     _setLoadingMovieDetails(true);
@@ -182,6 +228,28 @@ class MovieProvider extends ChangeNotifier {
       _heroFilterMovies = await _repository.fetchHeroFilterMovies(filterParams);
       notifyListeners();
     } catch (e) {
+      _setHeroFilterError(e.toString());
+    } finally {
+      _setLoadingHeroFilter(false);
+    }
+  }
+
+  /// Load hero filter movies with filter parameters
+  Future<void> loadHeroFilterMoviesWithFilters(
+    Map<String, dynamic> filterParams,
+  ) async {
+    _setLoadingHeroFilter(true);
+    _clearHeroFilterError();
+
+    try {
+      print('🎯 Loading hero filter movies with filter params: $filterParams');
+      _heroFilterMovies = await _repository.fetchHeroFilterMovies(filterParams);
+      print(
+        '✅ Successfully loaded ${_heroFilterMovies.length} hero filter movies',
+      );
+      notifyListeners();
+    } catch (e) {
+      print('❌ Error loading hero filter movies: $e');
       _setHeroFilterError(e.toString());
     } finally {
       _setLoadingHeroFilter(false);

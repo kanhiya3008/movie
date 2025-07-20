@@ -245,270 +245,575 @@ class _FilterListWidgetState extends State<FilterListWidget> {
     List<String> tempSelectedCheckboxes = [];
     List<String> tempSelectedPlatforms = [];
 
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) {
-          // Function to update radio button selection
-          void updateRadioSelection(String? value, String? label) {
-            setDialogState(() {
-              tempSelectedValue = value;
-              tempSelectedLabel = label;
-            });
-          }
+    final overlay = Overlay.of(context);
+    late OverlayEntry entry;
 
-          // Function to update checkbox selection
-          void updateCheckboxSelection(String value, bool isSelected) {
-            setDialogState(() {
-              if (isSelected) {
-                tempSelectedCheckboxes.add(value);
-              } else {
-                tempSelectedCheckboxes.remove(value);
-              }
-            });
-          }
+    entry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          top: MediaQuery.of(context).padding.top + 55,
+          left: 0,
+          right: 0,
+          child: Material(
+            color: Colors.transparent,
+            child: SafeArea(
+              child: Center(
+                child: StatefulBuilder(
+                  builder: (context, setDialogState) {
+                    // Selection update functions
+                    void updateRadioSelection(String? value, String? label) {
+                      setDialogState(() {
+                        tempSelectedValue = value;
+                        tempSelectedLabel = label;
+                      });
+                    }
 
-          return Dialog(
-            backgroundColor: Colors.transparent,
-            child: Container(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.7,
-                maxWidth: MediaQuery.of(context).size.width * 0.9,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Header with close button
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: const BoxDecoration(
-                      color: AppColors.card,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Select $category',
-                          style: AppTypography.titleLarge.copyWith(
-                            fontWeight: AppTypography.bold,
-                          ),
-                        ),
-                        const Spacer(),
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.textSecondary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.close,
-                              color: AppColors.textSecondary,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                    void updateCheckboxSelection(
+                      String value,
+                      bool isSelected,
+                    ) {
+                      setDialogState(() {
+                        if (isSelected) {
+                          tempSelectedCheckboxes.add(value);
+                        } else {
+                          tempSelectedCheckboxes.remove(value);
+                        }
+                      });
+                    }
 
-                  // Custom content based on category
-                  Flexible(
-                    child: Container(
+                    return Container(
+                      // margin: const EdgeInsets.symmetric(horizontal: 16),
                       constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.4,
+                        maxHeight: MediaQuery.of(context).size.height * 0.7,
+                        maxWidth: MediaQuery.of(context).size.width,
                       ),
-                      child: category.toLowerCase() == 'availability'
-                          ? _buildAvailabilityFilter(
-                              options,
-                              tempSelectedValue,
-                              tempSelectedLabel,
-                              tempSelectedCheckboxes,
-                              tempSelectedPlatforms,
-                              updateRadioSelection,
-                              updateCheckboxSelection,
-                            )
-                          : category.toLowerCase() == 'languages'
-                          ? _buildLanguageFilter(
-                              options,
-                              tempSelectedCheckboxes,
-                              updateCheckboxSelection,
-                            )
-                          : category.toLowerCase() == 'ratings'
-                          ? _buildRatingFilter(
-                              options,
-                              tempSelectedValue,
-                              tempSelectedLabel,
-                              updateRadioSelection,
-                            )
-                          : category.toLowerCase() == 'releaseyears' ||
-                                category.toLowerCase() == 'year'
-                          ? _buildReleaseYearFilter(
-                              options,
-                              tempSelectedValue,
-                              tempSelectedLabel,
-                              updateRadioSelection,
-                            )
-                          : category.toLowerCase() == 'duration'
-                          ? _buildDurationFilter(
-                              options,
-                              tempSelectedValue,
-                              tempSelectedLabel,
-                              updateRadioSelection,
-                            )
-                          : category.toLowerCase() == 'genresv1'
-                          ? _buildGenresV1Filter(
-                              options,
-                              tempSelectedCheckboxes,
-                              updateCheckboxSelection,
-                            )
-                          : category.toLowerCase() == 'agesuitability'
-                          ? _buildAgeSuitabilityFilter(
-                              options,
-                              tempSelectedValue,
-                              tempSelectedLabel,
-                              tempSelectedCheckboxes,
-                              updateRadioSelection,
-                              updateCheckboxSelection,
-                            )
-                          : _buildDefaultFilter(
-                              category,
-                              options,
-                              tempSelectedValue,
-                              tempSelectedLabel,
-                              updateRadioSelection,
-                            ),
-                    ),
-                  ),
+                      decoration: BoxDecoration(
+                        color: AppColors.background,
 
-                  // Bottom buttons
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: const BoxDecoration(
-                      color: AppColors.card,
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        // Reset Button
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {
-                              setDialogState(() {
-                                tempSelectedValue = null;
-                                tempSelectedLabel = null;
-                                tempSelectedCheckboxes.clear();
-                                tempSelectedPlatforms.clear();
-                              });
-                            },
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.textSecondary,
-                              side: BorderSide(
-                                color: AppColors.textSecondary.withOpacity(0.3),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Header with close button
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: AppColors.card,
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(20),
                               ),
                             ),
-                            child: Text(
-                              'Reset',
-                              style: AppTypography.titleMedium.copyWith(
-                                fontWeight: AppTypography.semiBold,
-                              ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  '$category',
+                                  style: AppTypography.titleLarge.copyWith(
+                                    fontWeight: AppTypography.bold,
+                                  ),
+                                ),
+                                const Spacer(),
+                                GestureDetector(
+                                  onTap: () {
+                                    if (entry.mounted) entry.remove();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.textSecondary
+                                          .withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Icon(
+                                      Icons.close,
+                                      color: AppColors.textSecondary,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
 
-                        const SizedBox(width: 16),
+                          Divider(color: AppColors.textSecondary, thickness: 1),
 
-                        // Apply Button
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed:
-                                (tempSelectedValue != null ||
-                                    tempSelectedCheckboxes.isNotEmpty ||
-                                    tempSelectedPlatforms.isNotEmpty)
-                                ? () {
-                                    setState(() {
-                                      selectedValue = tempSelectedValue;
-                                      selectedLabel = tempSelectedLabel;
-                                    });
-
-                                    // For availability filter, combine all selections
-                                    if (category.toLowerCase() ==
-                                        'availability') {
-                                      final allSelections = <String>[];
-                                      if (tempSelectedValue != null) {
-                                        allSelections.add(tempSelectedValue!);
-                                      }
-                                      allSelections.addAll(
-                                        tempSelectedCheckboxes,
-                                      );
-                                      allSelections.addAll(
-                                        tempSelectedPlatforms,
-                                      );
-
-                                      widget.onFilterSelected?.call(
-                                        category,
-                                        allSelections.join(', '),
-                                        allSelections.join(','),
-                                      );
-                                    } else {
-                                      widget.onFilterSelected?.call(
-                                        category,
-                                        tempSelectedLabel ?? '',
-                                        tempSelectedValue ?? '',
-                                      );
-                                    }
-                                    Navigator.pop(context);
-                                  }
-                                : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: AppColors.textInverse,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                          // Filter content
+                          Flexible(
+                            child: Container(
+                              constraints: BoxConstraints(
+                                maxHeight:
+                                    MediaQuery.of(context).size.height * 0.4,
                               ),
-                              elevation: 2,
-                            ),
-                            child: Text(
-                              'Apply',
-                              style: AppTypography.titleMedium.copyWith(
-                                fontWeight: AppTypography.semiBold,
-                              ),
+                              child: category.toLowerCase() == 'availability'
+                                  ? _buildAvailabilityFilter(
+                                      options,
+                                      tempSelectedValue,
+                                      tempSelectedLabel,
+                                      tempSelectedCheckboxes,
+                                      tempSelectedPlatforms,
+                                      updateRadioSelection,
+                                      updateCheckboxSelection,
+                                    )
+                                  : category.toLowerCase() == 'languages'
+                                  ? _buildLanguageFilter(
+                                      options,
+                                      tempSelectedCheckboxes,
+                                      updateCheckboxSelection,
+                                    )
+                                  : category.toLowerCase() == 'ratings'
+                                  ? _buildRatingFilter(
+                                      options,
+                                      tempSelectedValue,
+                                      tempSelectedLabel,
+                                      updateRadioSelection,
+                                    )
+                                  : category.toLowerCase() == 'releaseyears' ||
+                                        category.toLowerCase() == 'year'
+                                  ? _buildReleaseYearFilter(
+                                      options,
+                                      tempSelectedValue,
+                                      tempSelectedLabel,
+                                      updateRadioSelection,
+                                    )
+                                  : category.toLowerCase() == 'duration'
+                                  ? _buildDurationFilter(
+                                      options,
+                                      tempSelectedValue,
+                                      tempSelectedLabel,
+                                      updateRadioSelection,
+                                    )
+                                  : category.toLowerCase() == 'genresv1'
+                                  ? _buildGenresV1Filter(
+                                      options,
+                                      tempSelectedCheckboxes,
+                                      updateCheckboxSelection,
+                                    )
+                                  : category.toLowerCase() == 'agesuitability'
+                                  ? _buildAgeSuitabilityFilter(
+                                      options,
+                                      tempSelectedValue,
+                                      tempSelectedLabel,
+                                      tempSelectedCheckboxes,
+                                      updateRadioSelection,
+                                      updateCheckboxSelection,
+                                    )
+                                  : _buildDefaultFilter(
+                                      category,
+                                      options,
+                                      tempSelectedValue,
+                                      tempSelectedLabel,
+                                      updateRadioSelection,
+                                    ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+
+                          // Bottom buttons
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: const BoxDecoration(
+                              color: AppColors.card,
+                              borderRadius: BorderRadius.vertical(
+                                bottom: Radius.circular(20),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                // Reset Button
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: () {
+                                      setDialogState(() {
+                                        tempSelectedValue = null;
+                                        tempSelectedLabel = null;
+                                        tempSelectedCheckboxes.clear();
+                                        tempSelectedPlatforms.clear();
+                                      });
+                                    },
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: AppColors.textSecondary,
+                                      side: BorderSide(
+                                        color: AppColors.textSecondary
+                                            .withOpacity(0.3),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Reset',
+                                      style: AppTypography.titleMedium.copyWith(
+                                        fontWeight: AppTypography.semiBold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                // Apply Button
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed:
+                                        (tempSelectedValue != null ||
+                                            tempSelectedCheckboxes.isNotEmpty ||
+                                            tempSelectedPlatforms.isNotEmpty)
+                                        ? () {
+                                            setState(() {
+                                              selectedValue = tempSelectedValue;
+                                              selectedLabel = tempSelectedLabel;
+                                            });
+
+                                            if (category.toLowerCase() ==
+                                                'availability') {
+                                              // For availability filter, use only the radio button selection
+                                              if (tempSelectedValue != null) {
+                                                widget.onFilterSelected?.call(
+                                                  category,
+                                                  tempSelectedLabel ?? '',
+                                                  tempSelectedValue!,
+                                                );
+                                              }
+                                            } else {
+                                              final allSelections = <String>[];
+                                              if (tempSelectedValue != null) {
+                                                allSelections.add(
+                                                  tempSelectedValue!,
+                                                );
+                                              }
+                                              allSelections.addAll(
+                                                tempSelectedCheckboxes,
+                                              );
+                                              allSelections.addAll(
+                                                tempSelectedPlatforms,
+                                              );
+
+                                              widget.onFilterSelected?.call(
+                                                category,
+                                                allSelections.join(', '),
+                                                allSelections.join(','),
+                                              );
+                                            }
+
+                                            if (entry.mounted) entry.remove();
+                                          }
+                                        : null,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primary,
+                                      foregroundColor: AppColors.textInverse,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      elevation: 2,
+                                    ),
+                                    child: Text(
+                                      'Apply',
+                                      style: AppTypography.titleMedium.copyWith(
+                                        fontWeight: AppTypography.semiBold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
+
+    overlay.insert(entry);
   }
+
+  // void _showFilterOptions1(
+  //   String category,
+  //   List<Map<String, dynamic>> options,
+  // ) {
+  //   String? tempSelectedValue;
+  //   String? tempSelectedLabel;
+  //   List<String> tempSelectedCheckboxes = [];
+  //   List<String> tempSelectedPlatforms = [];
+
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: true,
+  //     builder: (context) => StatefulBuilder(
+  //       builder: (context, setDialogState) {
+  //         // Function to update radio button selection
+  //         void updateRadioSelection(String? value, String? label) {
+  //           setDialogState(() {
+  //             tempSelectedValue = value;
+  //             tempSelectedLabel = label;
+  //           });
+  //         }
+
+  //         // Function to update checkbox selection
+  //         void updateCheckboxSelection(String value, bool isSelected) {
+  //           setDialogState(() {
+  //             if (isSelected) {
+  //               tempSelectedCheckboxes.add(value);
+  //             } else {
+  //               tempSelectedCheckboxes.remove(value);
+  //             }
+  //           });
+  //         }
+
+  //         return Dialog(
+  //           backgroundColor: Colors.transparent,
+  //           child: Container(
+  //             constraints: BoxConstraints(
+  //               maxHeight: MediaQuery.of(context).size.height * 0.7,
+  //               maxWidth: MediaQuery.of(context).size.width * 0.9,
+  //             ),
+  //             decoration: BoxDecoration(
+  //               color: AppColors.background,
+  //               borderRadius: BorderRadius.circular(20),
+  //               boxShadow: [
+  //                 BoxShadow(
+  //                   color: Colors.black.withOpacity(0.3),
+  //                   blurRadius: 20,
+  //                   offset: const Offset(0, 10),
+  //                 ),
+  //               ],
+  //             ),
+  //             child: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 // Header with close button
+  //                 Container(
+  //                   padding: const EdgeInsets.all(20),
+  //                   decoration: const BoxDecoration(
+  //                     color: AppColors.card,
+  //                     borderRadius: BorderRadius.vertical(
+  //                       top: Radius.circular(20),
+  //                     ),
+  //                   ),
+  //                   child: Row(
+  //                     children: [
+  //                       Text(
+  //                         'Select $category',
+  //                         style: AppTypography.titleLarge.copyWith(
+  //                           fontWeight: AppTypography.bold,
+  //                         ),
+  //                       ),
+  //                       const Spacer(),
+  //                       GestureDetector(
+  //                         onTap: () => Navigator.pop(context),
+  //                         child: Container(
+  //                           padding: const EdgeInsets.all(8),
+  //                           decoration: BoxDecoration(
+  //                             color: AppColors.textSecondary.withOpacity(0.1),
+  //                             borderRadius: BorderRadius.circular(8),
+  //                           ),
+  //                           child: const Icon(
+  //                             Icons.close,
+  //                             color: AppColors.textSecondary,
+  //                             size: 20,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+
+  //                 // Custom content based on category
+  //                 Flexible(
+  //                   child: Container(
+  //                     constraints: BoxConstraints(
+  //                       maxHeight: MediaQuery.of(context).size.height * 0.4,
+  //                     ),
+  //                     child: category.toLowerCase() == 'availability'
+  //                         ? _buildAvailabilityFilter(
+  //                             options,
+  //                             tempSelectedValue,
+  //                             tempSelectedLabel,
+  //                             tempSelectedCheckboxes,
+  //                             tempSelectedPlatforms,
+  //                             updateRadioSelection,
+  //                             updateCheckboxSelection,
+  //                           )
+  //                         : category.toLowerCase() == 'languages'
+  //                         ? _buildLanguageFilter(
+  //                             options,
+  //                             tempSelectedCheckboxes,
+  //                             updateCheckboxSelection,
+  //                           )
+  //                         : category.toLowerCase() == 'ratings'
+  //                         ? _buildRatingFilter(
+  //                             options,
+  //                             tempSelectedValue,
+  //                             tempSelectedLabel,
+  //                             updateRadioSelection,
+  //                           )
+  //                         : category.toLowerCase() == 'releaseyears' ||
+  //                               category.toLowerCase() == 'year'
+  //                         ? _buildReleaseYearFilter(
+  //                             options,
+  //                             tempSelectedValue,
+  //                             tempSelectedLabel,
+  //                             updateRadioSelection,
+  //                           )
+  //                         : category.toLowerCase() == 'duration'
+  //                         ? _buildDurationFilter(
+  //                             options,
+  //                             tempSelectedValue,
+  //                             tempSelectedLabel,
+  //                             updateRadioSelection,
+  //                           )
+  //                         : category.toLowerCase() == 'genresv1'
+  //                         ? _buildGenresV1Filter(
+  //                             options,
+  //                             tempSelectedCheckboxes,
+  //                             updateCheckboxSelection,
+  //                           )
+  //                         : category.toLowerCase() == 'agesuitability'
+  //                         ? _buildAgeSuitabilityFilter(
+  //                             options,
+  //                             tempSelectedValue,
+  //                             tempSelectedLabel,
+  //                             tempSelectedCheckboxes,
+  //                             updateRadioSelection,
+  //                             updateCheckboxSelection,
+  //                           )
+  //                         : _buildDefaultFilter(
+  //                             category,
+  //                             options,
+  //                             tempSelectedValue,
+  //                             tempSelectedLabel,
+  //                             updateRadioSelection,
+  //                           ),
+  //                   ),
+  //                 ),
+
+  //                 // Bottom buttons
+  //                 Container(
+  //                   padding: const EdgeInsets.all(20),
+  //                   decoration: const BoxDecoration(
+  //                     color: AppColors.card,
+  //                     borderRadius: BorderRadius.vertical(
+  //                       bottom: Radius.circular(20),
+  //                     ),
+  //                   ),
+  //                   child: Row(
+  //                     children: [
+  //                       // Reset Button
+  //                       Expanded(
+  //                         child: OutlinedButton(
+  //                           onPressed: () {
+  //                             setDialogState(() {
+  //                               tempSelectedValue = null;
+  //                               tempSelectedLabel = null;
+  //                               tempSelectedCheckboxes.clear();
+  //                               tempSelectedPlatforms.clear();
+  //                             });
+  //                           },
+  //                           style: OutlinedButton.styleFrom(
+  //                             foregroundColor: AppColors.textSecondary,
+  //                             side: BorderSide(
+  //                               color: AppColors.textSecondary.withOpacity(0.3),
+  //                             ),
+  //                             padding: const EdgeInsets.symmetric(vertical: 16),
+  //                             shape: RoundedRectangleBorder(
+  //                               borderRadius: BorderRadius.circular(12),
+  //                             ),
+  //                           ),
+  //                           child: Text(
+  //                             'Reset',
+  //                             style: AppTypography.titleMedium.copyWith(
+  //                               fontWeight: AppTypography.semiBold,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ),
+
+  //                       const SizedBox(width: 16),
+
+  //                       // Apply Button
+  //                       Expanded(
+  //                         child: ElevatedButton(
+  //                           onPressed:
+  //                               (tempSelectedValue != null ||
+  //                                   tempSelectedCheckboxes.isNotEmpty ||
+  //                                   tempSelectedPlatforms.isNotEmpty)
+  //                               ? () {
+  //                                   setState(() {
+  //                                     selectedValue = tempSelectedValue;
+  //                                     selectedLabel = tempSelectedLabel;
+  //                                   });
+
+  //                                   // For availability filter, combine all selections
+  //                                   if (category.toLowerCase() ==
+  //                                       'availability') {
+  //                                     final allSelections = <String>[];
+  //                                     if (tempSelectedValue != null) {
+  //                                       allSelections.add(tempSelectedValue!);
+  //                                     }
+  //                                     allSelections.addAll(
+  //                                       tempSelectedCheckboxes,
+  //                                     );
+  //                                     allSelections.addAll(
+  //                                       tempSelectedPlatforms,
+  //                                     );
+
+  //                                     widget.onFilterSelected?.call(
+  //                                       category,
+  //                                       allSelections.join(', '),
+  //                                       allSelections.join(','),
+  //                                     );
+  //                                   } else {
+  //                                     widget.onFilterSelected?.call(
+  //                                       category,
+  //                                       tempSelectedLabel ?? '',
+  //                                       tempSelectedValue ?? '',
+  //                                     );
+  //                                   }
+  //                                   Navigator.pop(context);
+  //                                 }
+  //                               : null,
+  //                           style: ElevatedButton.styleFrom(
+  //                             backgroundColor: AppColors.primary,
+  //                             foregroundColor: AppColors.textInverse,
+  //                             padding: const EdgeInsets.symmetric(vertical: 16),
+  //                             shape: RoundedRectangleBorder(
+  //                               borderRadius: BorderRadius.circular(12),
+  //                             ),
+  //                             elevation: 2,
+  //                           ),
+  //                           child: Text(
+  //                             'Apply',
+  //                             style: AppTypography.titleMedium.copyWith(
+  //                               fontWeight: AppTypography.semiBold,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   Widget _buildAvailabilityFilter(
     List<Map<String, dynamic>> options,
@@ -525,43 +830,30 @@ class _FilterListWidgetState extends State<FilterListWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // More Platforms Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => _showPlatformSelection(
+          InkWell(
+            onTap: () {
+              _showPlatformSelection(
                 tempSelectedPlatforms,
                 updateRadioSelection,
-              ),
-              icon: const Icon(Icons.add, size: 18),
-              label: Text(
-                'More Platforms',
-                style: AppTypography.titleMedium.copyWith(
-                  fontWeight: AppTypography.semiBold,
+              );
+            },
+
+            child: Row(
+              children: [
+                Text(
+                  'More Platforms',
+                  style: AppTypography.titleMedium.copyWith(
+                    fontWeight: AppTypography.semiBold,
+                  ),
                 ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryLight,
-                foregroundColor: AppColors.textPrimary,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 2,
-              ),
+                SizedBox(width: 5),
+                Icon(Icons.arrow_forward_ios, size: 15),
+              ],
             ),
           ),
 
-          const SizedBox(height: 20),
-
           // Radio buttons for first two options
           if (options.length >= 2) ...[
-            Text(
-              'Availability Type',
-              style: AppTypography.titleMedium.copyWith(
-                fontWeight: AppTypography.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
             const SizedBox(height: 12),
             ...options.take(2).map((option) {
               final label = option['label'] ?? '';

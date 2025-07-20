@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:streamnest/presentation/screens/heroShimmerEffect.dart';
 import 'dart:async';
 import 'package:streamnest/presentation/screens/widgets/heroidgets.dart';
 import '../../core/constants/app_constants.dart';
@@ -358,11 +359,22 @@ class _HomeContentState extends State<HomeContent>
     // Here you can implement the logic to filter movies based on the selected category, label and value
     print('Selected filter: $category - $label ($value)');
 
-    // Build filter parameters for hero API call
+    // Build filter parameters for API calls
     final filterParams = _buildFilterParams(category, value);
 
-    // Call hero filter API with the selected filters
-    context.read<MovieProvider>().loadHeroFilterMovies(filterParams);
+    // Debug print to see the filter structure
+    print('Filter params for API: $filterParams');
+    print('Availability structure: ${filterParams['availability']}');
+    print('Availability type: ${filterParams['availability']?.runtimeType}');
+
+    // Call both hero filter API and collection API with the selected filters
+    final movieProvider = context.read<MovieProvider>();
+
+    // Call hero filter API
+    movieProvider.loadHeroFilterMoviesWithFilters(filterParams);
+
+    // Call collection API for all endpoints
+    movieProvider.loadAllCollectionsWithFilters(filterParams);
   }
 
   Map<String, dynamic> _buildFilterParams(String category, String value) {
@@ -383,7 +395,12 @@ class _HomeContentState extends State<HomeContent>
         filterParams['ageSuitability'] = value;
         break;
       case 'availability':
-        filterParams['availability'] = value;
+        // For availability, create the proper structure
+        filterParams['availability'] = {
+          "filter":
+              value, // This will be the radio button value (e.g., "my_platforms")
+          "platforms": [], // Empty platforms array for now
+        };
         break;
       case 'duration':
         filterParams['duration'] = value;
@@ -1094,54 +1111,81 @@ class _HomeContentState extends State<HomeContent>
   }
 
   Widget _buildFeaturedCarousel(MovieProvider movieProvider) {
-    // Show loading state for carousel
-    if (movieProvider.isLoadingFeatured) {
+    // Show shimmer loading state for carousel when loading hero filter movies
+    if (movieProvider.isLoadingHeroFilter) {
       return Container(
         margin: EdgeInsets.symmetric(
           horizontal: 16,
-          vertical:
-              MediaQuery.of(context).size.height * 0.02, // 2% of screen height
+          vertical: MediaQuery.of(context).size.height * 0.02,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Loading skeleton
+            // Shimmer loading skeleton
             Container(
-              height:
-                  MediaQuery.of(context).size.height *
-                  0.6, // 60% of screen height
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: AppColors.card,
-              ),
-              child: const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
-              ),
+              height: MediaQuery.of(context).size.height * 0.78,
+              child: buildMovieTabShimmer(context),
             ),
           ],
         ),
       );
     }
 
-    // Use hero filter movies from API, fallback to featured movies if empty
-    List<Movie> featuredMovies = movieProvider.heroFilterMovies;
-
-    if (featuredMovies.isEmpty) {
-      // Fallback to featured movies
-      featuredMovies = movieProvider.featuredMovies;
+    // Show shimmer loading state for featured movies if hero filter is empty and featured is loading
+    if (movieProvider.heroFilterMovies.isEmpty &&
+        movieProvider.isLoadingFeatured) {
+      return Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: MediaQuery.of(context).size.height * 0.02,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height * 0.78,
+              child: _buildShimmerCarouselItem(),
+            ),
+          ],
+        ),
+      );
     }
 
-    if (featuredMovies.isEmpty && movieProvider.collections.isNotEmpty) {
-      // Fallback to first collection's movies
+    // Priority order: Hero Filter Movies > Featured Movies > Collections
+    List<Movie> featuredMovies = [];
+
+    // First priority: Hero Filter Movies (filtered results)
+    if (movieProvider.heroFilterMovies.isNotEmpty) {
+      featuredMovies = movieProvider.heroFilterMovies;
+    }
+    // Second priority: Featured Movies (fallback)
+    else if (movieProvider.featuredMovies.isNotEmpty) {
+      featuredMovies = movieProvider.featuredMovies;
+    }
+    // Third priority: First collection's movies (final fallback)
+    else if (movieProvider.collections.isNotEmpty) {
       featuredMovies = movieProvider.collections.values.first.movies
           .take(5)
           .toList();
     }
 
+    // Show shimmer when no movies are available (data is still loading)
     if (featuredMovies.isEmpty) {
-      return const SizedBox.shrink();
+      return Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: MediaQuery.of(context).size.height * 0.02,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height * 0.78,
+              child: _buildShimmerCarouselItem(),
+            ),
+          ],
+        ),
+      );
     }
 
     // Start auto-sliding when carousel is built
@@ -1150,20 +1194,12 @@ class _HomeContentState extends State<HomeContent>
     });
 
     return Container(
-      // margin: EdgeInsets.symmetric(
-      //   horizontal: 16,
-      //   vertical:
-      //       MediaQuery.of(context).size.height * 0.02, // 2% of screen height
-      // ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Carousel with navigation arrows
           Container(
-            height:
-                MediaQuery.of(context).size.height *
-                0.78, // 78% of screen height
-            //  padding: const EdgeInsets.symmetric(horizontal: 8),
+            height: MediaQuery.of(context).size.height * 0.78,
             child: Stack(
               children: [
                 // PageView with auto-sliding
@@ -1177,6 +1213,10 @@ class _HomeContentState extends State<HomeContent>
                   },
                   itemBuilder: (context, index) {
                     final movie = featuredMovies[index];
+                    // Show shimmer if movie is null or data is not properly loaded
+                    if (movie == null || movie.title.isEmpty) {
+                      return _buildShimmerCarouselItem();
+                    }
                     return _buildCarouselItem(movie);
                   },
                 ),
@@ -1234,7 +1274,12 @@ class _HomeContentState extends State<HomeContent>
     );
   }
 
-  Widget _buildCarouselItem(Movie movie) {
+  Widget _buildCarouselItem(Movie? movie) {
+    // If movie is null or data is not loaded, show shimmer
+    if (movie == null) {
+      return _buildShimmerCarouselItem();
+    }
+
     final imageUrl = movie.posterPath.startsWith('http')
         ? movie.posterPath
         : 'https://image.tmdb.org/t/p/w500${movie.posterPath}';
@@ -1268,6 +1313,239 @@ class _HomeContentState extends State<HomeContent>
           child: buildMovieTab(movie, false, null, context),
         ),
       ),
+    );
+  }
+
+  // Reusable shimmer carousel item that can be used across multiple screens
+  Widget _buildShimmerCarouselItem() {
+    // Calculate responsive margin based on screen width
+    final screenWidth = MediaQuery.of(context).size.width;
+    final horizontalMargin = screenWidth < 360
+        ? 2.0
+        : screenWidth < 480
+        ? 4.0
+        : screenWidth < 600
+        ? 6.0
+        : 10.0;
+
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: _ShimmerEffect(
+          child: Container(
+            color: AppColors.card,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Movie poster shimmer
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.card.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Movie title shimmer
+                Container(
+                  height: 20,
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: AppColors.card.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Movie subtitle shimmer
+                Container(
+                  height: 16,
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: AppColors.card.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Rating shimmer
+                Container(
+                  height: 16,
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: AppColors.card.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Action buttons shimmer
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 40,
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.card.withOpacity(0.7),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        height: 40,
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.card.withOpacity(0.7),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Cast section shimmer
+                Container(
+                  height: 60,
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      // Cast avatars shimmer
+                      ...List.generate(
+                        3,
+                        (index) => Container(
+                          margin: EdgeInsets.only(right: index < 2 ? 8 : 0),
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.card.withOpacity(0.7),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      // Cast text shimmer
+                      Expanded(
+                        child: Container(
+                          height: 16,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            color: AppColors.card.withOpacity(0.7),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Description shimmer
+                Container(
+                  height: 16,
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: AppColors.card.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 16,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: AppColors.card.withOpacity(0.7),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Custom shimmer effect widget using Flutter's built-in animation
+class _ShimmerEffect extends StatefulWidget {
+  final Widget child;
+
+  const _ShimmerEffect({required this.child});
+
+  @override
+  State<_ShimmerEffect> createState() => _ShimmerEffectState();
+}
+
+class _ShimmerEffectState extends State<_ShimmerEffect>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+    _animation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _controller.repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return ShaderMask(
+          shaderCallback: (bounds) {
+            return LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.card.withOpacity(0.3),
+                AppColors.card.withOpacity(0.7),
+                AppColors.card.withOpacity(0.3),
+              ],
+              stops: [
+                _animation.value - 0.3,
+                _animation.value,
+                _animation.value + 0.3,
+              ],
+            ).createShader(bounds);
+          },
+          child: widget.child,
+        );
+      },
     );
   }
 }

@@ -9,42 +9,85 @@ class MovieRepository {
     : _apiService = apiService ?? StreamNestApiService();
 
   Future<List<String>> fetchCollectionEndpoints() async {
+    print('🌐 Calling user-collections API to get endpoints...');
     final response = await _apiService.get(
       'https://api.streamnest.tv/movies/user-collections',
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final List<dynamic> data = response.data;
-      return data.map((e) => e.toString()).toList();
+      final endpoints = data.map((e) => e.toString()).toList();
+      print('📋 Received endpoints from user-collections API: $endpoints');
+      return endpoints;
     } else {
+      print('❌ Failed to load collection endpoints: ${response.statusCode}');
       throw Exception("Failed to load collection endpoints");
     }
   }
 
-  Future<MovieCollectionResponse> fetchCollection(String endpoint) async {
+  Future<MovieCollectionResponse> fetchCollection(
+    String endpoint, {
+    Map<String, dynamic>? filterParams,
+  }) async {
+    // Default request body
+    final requestBody = {
+      "ageSuitability": null,
+      "availability": {
+        "filter": filterParams?['availability']?['filter'] ?? "free",
+        "platforms": filterParams?['availability']?['platforms'] ?? [],
+      },
+      "duration": filterParams?['duration'] ?? null,
+      "genre": filterParams?['genre'] ?? null,
+      "languages": filterParams?['languages'] ?? ["en", "hi"],
+      "rating": filterParams?['rating'] ?? null,
+      "limit": 20,
+    };
+
+    // Debug print to see what's being sent
+    print('Request body: $requestBody');
+
     final response = await _apiService.post(
       "https://api.streamnest.tv/movies/filter/$endpoint",
-      {
-        // "availability": null,
-        // "genre": [],
-        // "releaseYear": "",
-        // "languages": [],
-        // "rating": "",
-        // "duration": "",
-        // "ageSuitability": [],
-        "limit": 20,
-      },
+      requestBody,
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = response.data;
 
       if (data != null && data is Map<String, dynamic>) {
-        return MovieCollectionResponse.fromJson(data);
+        try {
+          // // Check if movies key exists and its type
+          // if (data.containsKey('movies')) {
+          //   print('Movies key exists, type: ${data['movies'].runtimeType}');
+          //   if (data['movies'] is List) {
+          //     print('Movies list length: ${(data['movies'] as List).length}');
+          //   }
+          // }
+
+          // // Check if collection key exists
+          // if (data.containsKey('collection')) {
+          //   print(
+          //     'Collection key exists, type: ${data['collection'].runtimeType}',
+          //   );
+          // }
+
+          final result = MovieCollectionResponse.fromJson(data);
+          //  print('Successfully parsed MovieCollectionResponse for $endpoint');
+          return result;
+        } catch (e, stackTrace) {
+          // print('Error parsing MovieCollectionResponse for $endpoint: $e');
+          // print('Stack trace: $stackTrace');
+          // print('Data structure: $data');
+          throw Exception("Failed to parse collection response: $e");
+        }
       } else {
+        // print(
+        //   'Invalid data format for $endpoint. Expected Map, got: ${data.runtimeType}',
+        // );
         throw Exception("Invalid data format received from server.");
       }
     } else {
+      // print('API error for $endpoint: ${response.statusCode}');
       throw Exception("Failed to fetch data: ${response.statusCode}");
     }
   }
@@ -175,7 +218,26 @@ class MovieRepository {
     Map<String, dynamic> filterParams,
   ) async {
     try {
-      final response = await _apiService.getHeroFilterMovies(filterParams);
+      // Create the same request body structure as fetchCollection
+      final requestBody = {
+        "ageSuitability": filterParams['ageSuitability'] ?? null,
+        "availability": {
+          "filter": filterParams['availability']?['filter'] ?? "free",
+          "platforms": filterParams['availability']?['platforms'] ?? [],
+        },
+        "duration": filterParams['duration'] ?? null,
+        "genre": filterParams['genre'] ?? null,
+        "languages": filterParams['languages'] ?? ["en", "hi"],
+        "rating": filterParams['rating'] ?? null,
+        "limit": 20,
+      };
+
+      print('Fetching hero filter movies with request body: $requestBody');
+
+      final response = await _apiService.post(
+        '/movies/filter/hero',
+        requestBody,
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = response.data;
