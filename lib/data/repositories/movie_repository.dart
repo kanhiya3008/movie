@@ -33,12 +33,13 @@ class MovieRepository {
     final requestBody = {
       "ageSuitability": null,
       "availability": {
-        "filter": filterParams?['availability']?['filter'] ?? "free",
+        "filter": filterParams?['availability']?['filter'] ?? "",
         "platforms": filterParams?['availability']?['platforms'] ?? [],
+        "modifications": filterParams?['availability']?['modifications'] ?? [],
       },
       "duration": filterParams?['duration'] ?? null,
       "genre": filterParams?['genre'] ?? null,
-      "languages": filterParams?['languages'] ?? ["en", "hi"],
+      "languages": filterParams?['languages'] ?? [],
       "rating": filterParams?['rating'] ?? null,
       "limit": 20,
     };
@@ -222,12 +223,13 @@ class MovieRepository {
       final requestBody = {
         "ageSuitability": filterParams['ageSuitability'] ?? null,
         "availability": {
-          "filter": filterParams['availability']?['filter'] ?? "free",
+          "filter": filterParams['availability']?['filter'] ?? "",
           "platforms": filterParams['availability']?['platforms'] ?? [],
+          "modifications": filterParams['availability']?['modifications'] ?? [],
         },
         "duration": filterParams['duration'] ?? null,
         "genre": filterParams['genre'] ?? null,
-        "languages": filterParams['languages'] ?? ["en", "hi"],
+        "languages": filterParams['languages'] ?? [],
         "rating": filterParams['rating'] ?? null,
         "limit": 20,
       };

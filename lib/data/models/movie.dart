@@ -13,59 +13,32 @@ class MovieCollectionResponse {
 
   factory MovieCollectionResponse.fromJson(Map<String, dynamic> json) {
     try {
-      print('MovieCollectionResponse.fromJson: Starting parsing...');
-
       // Parse movies list
-      print('MovieCollectionResponse.fromJson: Parsing movies...');
       final moviesList = json['movies'] as List? ?? [];
-      print(
-        'MovieCollectionResponse.fromJson: Movies list length: ${moviesList.length}',
-      );
-
       final movies = moviesList.where((x) => x != null).map((x) {
-        print('MovieCollectionResponse.fromJson: Parsing movie: $x');
         return Movie.fromJson(x);
       }).toList();
-      print(
-        'MovieCollectionResponse.fromJson: Successfully parsed ${movies.length} movies',
-      );
 
       // Parse collection
-      print('MovieCollectionResponse.fromJson: Parsing collection...');
       final collection = Collection.fromJson(json['collection'] ?? {});
-      print('MovieCollectionResponse.fromJson: Successfully parsed collection');
 
       // Parse currentPage
-      print('MovieCollectionResponse.fromJson: Parsing currentPage...');
       final currentPage = json['currentPage'] is int
           ? json['currentPage']
           : int.tryParse(json['currentPage']?.toString() ?? '1') ?? 1;
-      print('MovieCollectionResponse.fromJson: currentPage = $currentPage');
 
       // Parse pageSize
-      print('MovieCollectionResponse.fromJson: Parsing pageSize...');
       final pageSize = json['pageSize'] is int
           ? json['pageSize']
           : int.tryParse(json['pageSize']?.toString() ?? '20') ?? 20;
-      print('MovieCollectionResponse.fromJson: pageSize = $pageSize');
 
-      print(
-        'MovieCollectionResponse.fromJson: Creating MovieCollectionResponse object...',
-      );
-      final result = MovieCollectionResponse(
+      return MovieCollectionResponse(
         movies: movies,
         collection: collection,
         currentPage: currentPage,
         pageSize: pageSize,
       );
-      print(
-        'MovieCollectionResponse.fromJson: Successfully created MovieCollectionResponse',
-      );
-      return result;
     } catch (e, stackTrace) {
-      print('Error in MovieCollectionResponse.fromJson: $e');
-      print('Stack trace: $stackTrace');
-      print('JSON data: $json');
       rethrow;
     }
   }
@@ -108,101 +81,61 @@ class Movie {
 
   factory Movie.fromJson(Map<String, dynamic> json) {
     try {
-      print('Movie.fromJson: Starting parsing...');
-      print('Movie.fromJson: JSON keys: ${json.keys.toList()}');
-
       // Parse basic fields
-      print('Movie.fromJson: Parsing basic fields...');
       final id = json['id'] is int
           ? json['id']
           : int.tryParse(json['id']?.toString() ?? '0') ?? 0;
-      print('Movie.fromJson: id = $id');
 
       final title = json['title'] ?? 'No Title';
-      print('Movie.fromJson: title = $title');
 
       final releaseDate = json['releaseDate'] ?? '';
-      print('Movie.fromJson: releaseDate = $releaseDate');
 
       final description = json['description'] ?? '';
-      print('Movie.fromJson: description = $description');
 
       final duration = json['duration'] is int
           ? json['duration']
           : int.tryParse(json['duration']?.toString() ?? '0') ?? 0;
-      print('Movie.fromJson: duration = $duration');
 
       final posterPath = json['posterPath'] ?? '';
-      print('Movie.fromJson: posterPath = $posterPath');
 
       final slug = json['slug'] ?? '';
-      print('Movie.fromJson: slug = $slug');
 
       final rating = json['rating'];
-      print('Movie.fromJson: rating = $rating');
 
       final trailerYtId = json['trailerYtId'];
-      print('Movie.fromJson: trailerYtId = $trailerYtId');
 
       final teaserYtId = json['teaserYtId'];
-      print('Movie.fromJson: teaserYtId = $teaserYtId');
 
       final audienceRating = json['audience_rating'] ?? '0.0';
-      print('Movie.fromJson: audienceRating = $audienceRating');
 
       // Parse collections
-      print('Movie.fromJson: Parsing collections...');
       final collectionsList = json['collections'] as List? ?? [];
-      print(
-        'Movie.fromJson: Collections list length: ${collectionsList.length}',
-      );
       final collections = collectionsList.where((x) => x != null).map((x) {
-        print('Movie.fromJson: Parsing collection item: $x');
         return CollectionItem.fromJson(x);
       }).toList();
-      print(
-        'Movie.fromJson: Successfully parsed ${collections.length} collections',
-      );
 
       // Parse streaming platforms
-      print('Movie.fromJson: Parsing streaming platforms...');
       final streamingPlatformsList = json['streamingPlatforms'] as List? ?? [];
-      print(
-        'Movie.fromJson: Streaming platforms list length: ${streamingPlatformsList.length}',
-      );
       final streamingPlatforms = streamingPlatformsList
           .where((x) => x != null)
           .map((x) {
-            print('Movie.fromJson: Parsing streaming platform: $x');
             return StreamingPlatform.fromJson(x);
           })
           .toList();
-      print(
-        'Movie.fromJson: Successfully parsed ${streamingPlatforms.length} streaming platforms',
-      );
 
       // Parse crew
-      print('Movie.fromJson: Parsing crew...');
       final crewList = json['crew'] as List? ?? [];
-      print('Movie.fromJson: Crew list length: ${crewList.length}');
       final crew = crewList.where((x) => x != null).map((x) {
-        print('Movie.fromJson: Parsing crew member: $x');
         return Crew.fromJson(x);
       }).toList();
-      print('Movie.fromJson: Successfully parsed ${crew.length} crew members');
 
       // Parse cast
-      print('Movie.fromJson: Parsing cast...');
       final castList = json['cast'] as List? ?? [];
-      print('Movie.fromJson: Cast list length: ${castList.length}');
       final cast = castList.where((x) => x != null).map((x) {
-        print('Movie.fromJson: Parsing cast member: $x');
         return Cast.fromJson(x);
       }).toList();
-      print('Movie.fromJson: Successfully parsed ${cast.length} cast members');
 
-      print('Movie.fromJson: Creating Movie object...');
-      final result = Movie(
+      return Movie(
         id: id,
         title: title,
         releaseDate: releaseDate,
@@ -219,12 +152,7 @@ class Movie {
         crew: crew,
         cast: cast,
       );
-      print('Movie.fromJson: Successfully created Movie object');
-      return result;
     } catch (e, stackTrace) {
-      print('Error in Movie.fromJson: $e');
-      print('Stack trace: $stackTrace');
-      print('JSON data: $json');
       rethrow;
     }
   }
@@ -247,8 +175,6 @@ class Collection {
         name: json['name'] ?? '',
       );
     } catch (e) {
-      print('Error in Collection.fromJson: $e');
-      print('JSON data: $json');
       rethrow;
     }
   }
@@ -271,8 +197,6 @@ class CollectionItem {
             : int.tryParse(json['priority']?.toString() ?? '0') ?? 0,
       );
     } catch (e) {
-      print('Error in CollectionItem.fromJson: $e');
-      print('JSON data: $json');
       rethrow;
     }
   }
@@ -326,8 +250,6 @@ class StreamingPlatform {
             .toList(),
       );
     } catch (e) {
-      print('Error in StreamingPlatform.fromJson: $e');
-      print('JSON data: $json');
       rethrow;
     }
   }
@@ -350,8 +272,6 @@ class Platform {
         logo: json['logo'] ?? '',
       );
     } catch (e) {
-      print('Error in Platform.fromJson: $e');
-      print('JSON data: $json');
       rethrow;
     }
   }
@@ -382,8 +302,6 @@ class CountryAvailability {
             : null,
       );
     } catch (e) {
-      print('Error in CountryAvailability.fromJson: $e');
-      print('JSON data: $json');
       rethrow;
     }
   }
@@ -406,8 +324,6 @@ class Country {
         name: json['name'] ?? '',
       );
     } catch (e) {
-      print('Error in Country.fromJson: $e');
-      print('JSON data: $json');
       rethrow;
     }
   }
@@ -440,8 +356,6 @@ class Crew {
         person: Person.fromJson(json['person'] ?? {}),
       );
     } catch (e) {
-      print('Error in Crew.fromJson: $e');
-      print('JSON data: $json');
       rethrow;
     }
   }
@@ -478,8 +392,6 @@ class Cast {
         person: Person.fromJson(json['person'] ?? {}),
       );
     } catch (e) {
-      print('Error in Cast.fromJson: $e');
-      print('JSON data: $json');
       rethrow;
     }
   }
@@ -528,8 +440,6 @@ class Person {
             : int.tryParse(json['person_id']?.toString() ?? '0') ?? 0,
       );
     } catch (e) {
-      print('Error in Person.fromJson: $e');
-      print('JSON data: $json');
       rethrow;
     }
   }

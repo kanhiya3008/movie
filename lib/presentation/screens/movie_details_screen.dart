@@ -102,12 +102,13 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen>
                 Tab(text: "Friend's Rating"),
                 Tab(text: 'Similar Movies'),
               ],
-              labelStyle: AppTypography.labelSmall.copyWith(
+              labelStyle: AppTypography.titleSmall.copyWith(
                 fontWeight: AppTypography.semiBold,
               ),
+
               unselectedLabelStyle: AppTypography.labelSmall,
               indicatorColor: AppColors.primary,
-              labelColor: AppColors.primary,
+              labelColor: AppColors.textPrimary,
               unselectedLabelColor: AppColors.textSecondary,
               tabAlignment: TabAlignment.center, // Center align tabs
             ),
@@ -130,9 +131,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen>
                   context,
                 ),
               ),
-              buildCastTab(),
+              buildCastTab(movie, isLoadingDetails, detailsError, context),
               buildFriendsRatingTab(),
-              buildSimilarMoviesTab(),
+              buildSimilarMoviesTab(
+                movie,
+                isLoadingDetails,
+                detailsError,
+                context,
+              ),
             ],
           ),
         );

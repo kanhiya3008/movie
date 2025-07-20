@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:streamnest/core/utils/constFunction.dart';
 import 'package:streamnest/data/models/movie.dart';
 import 'package:streamnest/presentation/providers/movie_provider.dart';
+import 'package:streamnest/presentation/screens/heroShimmerEffect.dart';
 import 'package:streamnest/presentation/theme/app_colors.dart';
 import 'package:streamnest/presentation/theme/app_typography.dart';
 import 'package:streamnest/presentation/widgets/movie_card.dart';
@@ -97,7 +98,7 @@ Widget buildMovieTab(
 ) {
   final ScrollController streamingScrollController = ScrollController();
   if (isLoading) {
-    return _buildMovieTabShimmer(context);
+    return buildMovieTabShimmer(context);
   }
 
   if (error != null) {
@@ -913,266 +914,6 @@ Widget buildMovieTab(
   );
 }
 
-// Shimmer effect for movie tab loading
-Widget _buildMovieTabShimmer(BuildContext context) {
-  return SingleChildScrollView(
-    child: ShimmerEffect(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Top Section: Image and Content
-          Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Left Side: Movie Poster shimmer
-                  Container(
-                    width: MediaQuery.of(context).size.width < 360
-                        ? 100
-                        : MediaQuery.of(context).size.width < 480
-                        ? 110
-                        : 120,
-                    height: MediaQuery.of(context).size.width < 360
-                        ? 150
-                        : MediaQuery.of(context).size.width < 480
-                        ? 165
-                        : 180,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: AppColors.card.withOpacity(0.7),
-                    ),
-                  ),
-
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width < 360 ? 6 : 8,
-                  ),
-
-                  // Right Side: Content shimmer
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Movie title shimmer
-                        Container(
-                          height: 20,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: AppColors.card.withOpacity(0.7),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-
-                        // Login button shimmer
-                        Container(
-                          height: 30,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: AppColors.card.withOpacity(0.7),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-
-                        // Rating container shimmer
-                        Container(
-                          height: 25,
-                          width: 80,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: AppColors.card.withOpacity(0.7),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-
-                        // Star rating shimmer
-                        Row(
-                          children: List.generate(
-                            5,
-                            (index) => Container(
-                              margin: EdgeInsets.only(right: index < 4 ? 4 : 0),
-                              width: 20,
-                              height: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.card.withOpacity(0.7),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-
-                        // Action containers shimmer
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: AppColors.card.withOpacity(0.7),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width < 360
-                                  ? 4
-                                  : 8,
-                            ),
-                            Expanded(
-                              child: Container(
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: AppColors.card.withOpacity(0.7),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width < 360
-                                  ? 4
-                                  : 8,
-                            ),
-                            Expanded(
-                              child: Container(
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: AppColors.card.withOpacity(0.7),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Action buttons shimmer
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 45,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: AppColors.card.withOpacity(0.7),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width < 360 ? 8 : 12,
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 45,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: AppColors.card.withOpacity(0.7),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Cast and streaming section shimmer
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Cast section shimmer
-              SizedBox(
-                height: 80,
-                width: MediaQuery.of(context).size.width / 2.4,
-                child: Row(
-                  children: List.generate(
-                    3,
-                    (index) => Container(
-                      margin: EdgeInsets.only(right: index < 2 ? 8 : 0),
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.card.withOpacity(0.7),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 16),
-
-              // Streaming platforms shimmer
-              Expanded(
-                child: Container(
-                  height: 80,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    color: AppColors.card.withOpacity(0.7),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Description section shimmer
-          Container(
-            height: 20,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: AppColors.card.withOpacity(0.7),
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          Container(
-            height: 60,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: AppColors.card.withOpacity(0.7),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Synopsis section shimmer
-          Container(
-            height: 20,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: AppColors.card.withOpacity(0.7),
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          Container(
-            height: 60,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: AppColors.card.withOpacity(0.7),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-        ],
-      ),
-    ),
-  );
-}
-
 Widget buildDetailItem(String label, String value, BuildContext context) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1198,152 +939,93 @@ Widget buildDetailItem(String label, String value, BuildContext context) {
   );
 }
 
-Widget buildCastTab() {
-  return Consumer<MovieProvider>(
-    builder: (context, movieProvider, child) {
-      if (movieProvider.isLoadingCast) {
-        return _buildCastTabShimmer(context);
-      }
+Widget buildCastTab(
+  Movie movie,
+  bool isLoading,
+  String? error,
+  BuildContext context,
+) {
+  // Use cast data from the movie object
+  final cast = movie.cast;
 
-      if (movieProvider.castError != null) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, size: 48, color: AppColors.error),
-              const SizedBox(height: 16),
-              Text(
-                'Failed to load cast',
-                style: AppTypography.titleMedium.copyWith(
-                  color: AppColors.error,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                movieProvider.castError!,
-                style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        );
-      }
-
-      final cast = movieProvider.movieCast;
-      if (cast.isEmpty) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.people_outline,
-                size: 48,
-                color: AppColors.textTertiary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'No cast information available',
-                style: AppTypography.titleMedium.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Cast Header
-            Text(
-              'Cast & Crew',
-              style: AppTypography.headlineSmall.copyWith(
-                fontWeight: AppTypography.bold,
-              ),
+  if (cast.isEmpty) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.people_outline, size: 48, color: AppColors.textTertiary),
+          const SizedBox(height: 16),
+          Text(
+            'No cast information available',
+            style: AppTypography.titleMedium.copyWith(
+              color: AppColors.textSecondary,
             ),
-            const SizedBox(height: 8),
-            Text(
-              '${cast.length} cast members',
-              style: AppTypography.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 24),
+          ),
+        ],
+      ),
+    );
+  }
 
-            // Cast List
-            ...cast.asMap().entries.map((entry) {
-              final index = entry.key;
-              final castMember = entry.value;
-              final isEven = index % 2 == 0;
+  return SingleChildScrollView(
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Cast Header
+        Text(
+          'Cast',
+          style: AppTypography.headlineSmall.copyWith(
+            fontWeight: AppTypography.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '${cast.length} cast members',
+          style: AppTypography.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 24),
 
-              return Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isEven
-                      ? AppColors.card
-                      : AppColors.card.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Profile Image
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(40),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+        // Cast Grid
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 0.8,
+          ),
+          itemCount: cast.length,
+          itemBuilder: (context, index) {
+            final castMember = cast[index];
+
+            return Column(
+              children: [
+                // Profile Image - Round Circle
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(40),
-                        child: castMember.person.profilePath != null
-                            ? Image.network(
-                                castMember.person.profilePath!.startsWith(
-                                      'http',
-                                    )
-                                    ? castMember.person.profilePath!
-                                    : 'https://image.tmdb.org/t/p/w200${castMember.person.profilePath}',
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: AppColors.primary.withOpacity(0.1),
-                                    child: Center(
-                                      child: Text(
-                                        castMember.person.name.isNotEmpty
-                                            ? castMember.person.name[0]
-                                                  .toUpperCase()
-                                            : '?',
-                                        style: AppTypography.titleLarge
-                                            .copyWith(
-                                              color: AppColors.primary,
-                                              fontWeight: AppTypography.bold,
-                                            ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              )
-                            : Container(
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: castMember.person.profilePath != null
+                        ? Image.network(
+                            castMember.person.profilePath!.startsWith('http')
+                                ? castMember.person.profilePath!
+                                : 'https://image.tmdb.org/t/p/w200${castMember.person.profilePath}',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
                                 color: AppColors.primary.withOpacity(0.1),
                                 child: Center(
                                   child: Text(
@@ -1357,218 +1039,114 @@ Widget buildCastTab() {
                                     ),
                                   ),
                                 ),
+                              );
+                            },
+                          )
+                        : Container(
+                            color: AppColors.primary.withOpacity(0.1),
+                            child: Center(
+                              child: Text(
+                                castMember.person.name.isNotEmpty
+                                    ? castMember.person.name[0].toUpperCase()
+                                    : '?',
+                                style: AppTypography.titleLarge.copyWith(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: AppTypography.bold,
+                                ),
                               ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-
-                    // Cast Member Details
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Name
-                          Text(
-                            castMember.person.name,
-                            style: AppTypography.titleMedium.copyWith(
-                              fontWeight: AppTypography.bold,
                             ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 4),
-
-                          // Character Name
-                          if (castMember.character.isNotEmpty) ...[
-                            Text(
-                              'as ${castMember.character}',
-                              style: AppTypography.bodyMedium.copyWith(
-                                color: AppColors.primary,
-                                fontWeight: AppTypography.semiBold,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 8),
-                          ],
-
-                          // Additional Details
-                          Row(
-                            children: [
-                              // Department
-                              if (castMember
-                                  .person
-                                  .knownForDepartment
-                                  .isNotEmpty) ...[
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.accent.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    castMember.person.knownForDepartment,
-                                    style: AppTypography.labelSmall.copyWith(
-                                      color: AppColors.accent,
-                                      fontWeight: AppTypography.semiBold,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                              ],
-
-                              // Order (if available)
-                              if (castMember.order > 0) ...[
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.secondary.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    'Order: ${castMember.order}',
-                                    style: AppTypography.labelSmall.copyWith(
-                                      color: AppColors.secondary,
-                                      fontWeight: AppTypography.semiBold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-
-                          const SizedBox(height: 8),
-
-                          // Popularity (if available)
-                          if (castMember.person.popularity > 0) ...[
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.trending_up,
-                                  size: 16,
-                                  color: AppColors.textSecondary,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Popularity: ${castMember.person.popularity.toStringAsFixed(1)}',
-                                  style: AppTypography.labelSmall.copyWith(
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-
-                    // Action Button
-                    PopupMenuButton<String>(
-                      onSelected: (value) {
-                        // Handle cast member actions
-                        switch (value) {
-                          case 'view_profile':
-                            // Navigate to actor profile
-                            break;
-                          case 'other_movies':
-                            // Show other movies by this actor
-                            break;
-                          case 'add_favorite':
-                            // Add to favorite actors
-                            break;
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 'view_profile',
-                          child: Row(
-                            children: [
-                              Icon(Icons.person),
-                              SizedBox(width: 8),
-                              Text('View Profile'),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem(
-                          value: 'other_movies',
-                          child: Row(
-                            children: [
-                              Icon(Icons.movie),
-                              SizedBox(width: 8),
-                              Text('Other Movies'),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem(
-                          value: 'add_favorite',
-                          child: Row(
-                            children: [
-                              Icon(Icons.favorite_border),
-                              SizedBox(width: 8),
-                              Text('Add to Favorites'),
-                            ],
-                          ),
-                        ),
-                      ],
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.card,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Icon(
-                          Icons.more_vert,
-                          size: 20,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-
-            const SizedBox(height: 32),
-
-            // Cast Summary
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.primary.withOpacity(0.3)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Cast Summary',
-                    style: AppTypography.titleMedium.copyWith(
-                      fontWeight: AppTypography.bold,
-                      color: AppColors.primary,
-                    ),
                   ),
-                  const SizedBox(height: 8),
+                ),
+                const SizedBox(height: 8),
+
+                // Cast Member Name
+                Text(
+                  castMember.person.name,
+                  style: AppTypography.bodySmall.copyWith(
+                    fontWeight: AppTypography.semiBold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+
+                // Character Name
+                if (castMember.character.isNotEmpty) ...[
+                  const SizedBox(height: 2),
                   Text(
-                    'This movie features ${cast.length} talented cast members. The cast includes both established actors and rising stars, bringing their unique talents to create an unforgettable cinematic experience.',
-                    style: AppTypography.bodyMedium.copyWith(
+                    'as ${castMember.character}',
+                    style: AppTypography.labelSmall.copyWith(
                       color: AppColors.textSecondary,
-                      height: 1.5,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
                   ),
                 ],
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         ),
-      );
-    },
+
+        const SizedBox(height: 32),
+
+        // Crew Section
+        Text(
+          'Crew Highlights',
+          style: AppTypography.headlineSmall.copyWith(
+            fontWeight: AppTypography.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '${movie.crew.length} crew members',
+          style: AppTypography.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Crew List
+        ...movie.crew.map((crewMember) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 5),
+            // padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Text(
+                  crewMember.job + ":",
+                  style: AppTypography.labelSmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  crewMember.person.name,
+                  style: AppTypography.labelSmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ],
+    ),
   );
 }
 
@@ -1845,7 +1423,21 @@ Widget buildFriendsRatingTab() {
   );
 }
 
-Widget buildSimilarMoviesTab() {
+Widget buildSimilarMoviesTab(
+  Movie movie,
+  bool isLoading,
+  String? error,
+  BuildContext context,
+) {
+  // Trigger API call when tab is accessed
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final movieProvider = context.read<MovieProvider>();
+    if (movieProvider.similarMovies.isEmpty &&
+        !movieProvider.isLoadingSimilar) {
+      movieProvider.loadSimilarMovies(movie.id.toString());
+    }
+  });
+
   return Consumer<MovieProvider>(
     builder: (context, movieProvider, child) {
       if (movieProvider.isLoadingSimilar) {
@@ -1904,9 +1496,9 @@ Widget buildSimilarMoviesTab() {
       return GridView.builder(
         padding: const EdgeInsets.all(16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.7,
-          crossAxisSpacing: 16,
+          crossAxisCount: 3,
+          childAspectRatio: 0.6,
+          crossAxisSpacing: 12,
           mainAxisSpacing: 16,
         ),
         itemCount: similarMovies.length,

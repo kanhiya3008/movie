@@ -113,121 +113,65 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDrawer() {
-    return Drawer(
-      child: Container(
-        color: AppColors.background,
-        child: Column(
-          children: [
-            // Menu Items
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  _buildDrawerItem(icon: Icons.home, title: 'Home', index: 0),
-                  _buildDrawerItem(
-                    icon: Icons.rss_feed,
-                    title: 'Feed',
-                    index: 1,
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.movie,
-                    title: 'Movies',
-                    index: 2,
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.favorite,
-                    title: 'Like',
-                    index: 3,
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.bookmark,
-                    title: 'Watch List',
-                    index: 4,
-                  ),
-                  const Divider(),
-                  _buildDrawerItem(
-                    icon: Icons.search,
-                    title: 'Search',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // Navigate to search screen
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.settings,
-                    title: 'Settings',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // Navigate to settings screen
-                    },
-                  ),
-                ],
-              ),
-            ),
+    return SafeArea(
+      child: Drawer(
+        child: Container(
+          color: AppColors.background,
+          child: Column(
+            children: [
+              // Menu Items
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    _buildDrawerItem(icon: Icons.home, title: 'Home', index: 0),
+                    _buildDrawerItem(
+                      icon: Icons.movie,
+                      title: 'Movies',
+                      index: 2,
+                      onTap: () {
+                        // Refresh all home screen data
+                        final movieProvider = context.read<MovieProvider>();
+                        movieProvider.setLoading(true);
+                        movieProvider.loadAllCollections();
 
-            // User Profile Section
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.card,
-                border: Border(
-                  top: BorderSide(
-                    color: AppColors.textSecondary.withOpacity(0.2),
-                    width: 1,
-                  ),
+                        // Load hero filter movies for carousel
+                        final defaultFilterParams = {
+                          "ageSuitability": null,
+                          "availability": null,
+                          "duration": null,
+                          "genre": null,
+                          "languages": null,
+                          "rating": null,
+                          "releaseYear": null,
+                        };
+                        movieProvider.loadHeroFilterMovies(defaultFilterParams);
+
+                        // Navigate back (close drawer)
+                        Navigator.pop(context);
+                      },
+                    ),
+                    _buildDrawerItem(
+                      icon: Icons.rss_feed,
+                      title: 'Feed',
+                      index: 1,
+                    ),
+
+                    _buildDrawerItem(
+                      icon: Icons.favorite,
+                      title: 'Like',
+                      index: 3,
+                    ),
+                    _buildDrawerItem(
+                      icon: Icons.bookmark,
+                      title: 'Watch List',
+                      index: 4,
+                    ),
+                  ],
                 ),
               ),
-              child: Row(
-                children: [
-                  // Avatar
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(
-                      Icons.person,
-                      color: AppColors.textInverse,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-
-                  // User Info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'John Doe',
-                          style: AppTypography.titleMedium.copyWith(
-                            fontWeight: AppTypography.semiBold,
-                          ),
-                        ),
-                        Text(
-                          'Premium Member',
-                          style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Logout Button
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      // Show logout dialog
-                    },
-                    icon: const Icon(Icons.logout, color: AppColors.error),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -242,25 +186,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final isSelected = index != null && _currentIndex == index;
 
     return ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : AppColors.card,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(
-          icon,
-          color: isSelected ? AppColors.textInverse : AppColors.textSecondary,
-          size: 20,
-        ),
-      ),
       title: Text(
         title,
         style: AppTypography.titleMedium.copyWith(
           fontWeight: isSelected
               ? AppTypography.semiBold
               : AppTypography.medium,
-          color: isSelected ? AppColors.primary : AppColors.textPrimary,
+          color: AppColors.textPrimary,
         ),
       ),
       onTap:

@@ -182,7 +182,7 @@ Widget buildMovieTabShimmer(BuildContext context) {
                 width: MediaQuery.of(context).size.width / 2.4,
                 child: Row(
                   children: List.generate(
-                    3,
+                    2,
                     (index) => Container(
                       margin: EdgeInsets.only(right: index < 2 ? 8 : 0),
                       width: 50,

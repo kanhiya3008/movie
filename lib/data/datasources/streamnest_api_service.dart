@@ -63,8 +63,8 @@ class StreamNestApiService {
   Future<Response> getSimilarMovies(String movieId) async {
     try {
       print('Fetching similar movies for movie: $movieId');
-      print('URL: https://api.streamnest.tv/movies/$movieId/similar');
-      return await _dio.get('/movies/$movieId/similar');
+      print('URL: https://api.streamnest.tv/movies/getSimilarMovies/$movieId');
+      return await _dio.get('/movies/getSimilarMovies/$movieId');
     } catch (e) {
       print('DioException for similar movies: $e');
       rethrow;

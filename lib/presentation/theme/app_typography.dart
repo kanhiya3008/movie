@@ -133,7 +133,7 @@ class AppTypography {
 
   static const TextStyle labelSmall = TextStyle(
     fontFamily: secondaryFont,
-    fontSize: 10,
+    fontSize: 13,
     fontWeight: medium,
     letterSpacing: 0.5,
     color: AppColors.textTertiary,
