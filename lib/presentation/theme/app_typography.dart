@@ -1,183 +1,177 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
+import '../../core/constants/font_constants.dart';
 
 class AppTypography {
-  // Font Families
-  static const String primaryFont = 'Roboto';
-  static const String secondaryFont = 'Roboto';
-
-  // Font Weights
-  static const FontWeight light = FontWeight.w300;
-  static const FontWeight regular = FontWeight.w400;
-  static const FontWeight medium = FontWeight.w500;
-  static const FontWeight semiBold = FontWeight.w600;
-  static const FontWeight bold = FontWeight.w700;
-  static const FontWeight extraBold = FontWeight.w800;
-
   // Display Styles
-  static const TextStyle displayLarge = TextStyle(
-    fontFamily: primaryFont,
-    fontSize: 57,
-    fontWeight: bold,
-    letterSpacing: -0.25,
+  static TextStyle get displayLarge => GoogleFonts.inter(
+    fontSize: FontConstants.displayLarge,
+    fontWeight: FontConstants.bold,
+    letterSpacing: FontConstants.letterSpacingTight,
     color: AppColors.textPrimary,
   );
 
-  static const TextStyle displayMedium = TextStyle(
-    fontFamily: primaryFont,
-    fontSize: 45,
-    fontWeight: bold,
-    letterSpacing: 0,
+  static TextStyle get displayMedium => GoogleFonts.inter(
+    fontSize: FontConstants.displayMedium,
+    fontWeight: FontConstants.bold,
+    letterSpacing: FontConstants.letterSpacingNormal,
     color: AppColors.textPrimary,
   );
 
-  static const TextStyle displaySmall = TextStyle(
-    fontFamily: primaryFont,
-    fontSize: 36,
-    fontWeight: bold,
-    letterSpacing: 0,
+  static TextStyle get displaySmall => GoogleFonts.inter(
+    fontSize: FontConstants.displaySmall,
+    fontWeight: FontConstants.bold,
+    letterSpacing: FontConstants.letterSpacingNormal,
     color: AppColors.textPrimary,
   );
 
   // Headline Styles
-  static const TextStyle headlineLarge = TextStyle(
-    fontFamily: primaryFont,
-    fontSize: 32,
-    fontWeight: semiBold,
-    letterSpacing: 0,
+  static TextStyle get headlineLarge => GoogleFonts.inter(
+    fontSize: FontConstants.headlineLarge,
+    fontWeight: FontConstants.semiBold,
+    letterSpacing: FontConstants.letterSpacingNormal,
     color: AppColors.textPrimary,
   );
 
-  static const TextStyle headlineMedium = TextStyle(
-    fontFamily: primaryFont,
-    fontSize: 28,
-    fontWeight: semiBold,
-    letterSpacing: 0,
+  static TextStyle get headlineMedium => GoogleFonts.inter(
+    fontSize: FontConstants.headlineMedium,
+    fontWeight: FontConstants.semiBold,
+    letterSpacing: FontConstants.letterSpacingNormal,
     color: AppColors.textPrimary,
   );
 
-  static const TextStyle headlineSmall = TextStyle(
-    fontFamily: primaryFont,
-    fontSize: 24,
-    fontWeight: semiBold,
-    letterSpacing: 0,
+  static TextStyle get headlineSmall => GoogleFonts.inter(
+    fontSize: FontConstants.headlineSmall,
+    fontWeight: FontConstants.semiBold,
+    letterSpacing: FontConstants.letterSpacingNormal,
     color: AppColors.textPrimary,
   );
 
   // Title Styles
-  static const TextStyle titleLarge = TextStyle(
-    fontFamily: primaryFont,
-    fontSize: 18,
-    fontWeight: medium,
-    letterSpacing: 0,
+  static TextStyle get titleLarge => GoogleFonts.inter(
+    fontSize: FontConstants.titleLarge,
+    fontWeight: FontConstants.semiBold,
+    letterSpacing: FontConstants.letterSpacingNormal,
     color: AppColors.textPrimary,
   );
 
-  static const TextStyle titleMedium = TextStyle(
-    fontFamily: primaryFont,
-    fontSize: 14,
-    fontWeight: medium,
-    letterSpacing: 0.15,
+  static TextStyle get titleMedium => GoogleFonts.inter(
+    fontSize: FontConstants.titleMedium,
+    fontWeight: FontConstants.medium,
+    letterSpacing: FontConstants.letterSpacingWide,
     color: AppColors.textPrimary,
   );
 
-  static const TextStyle titleSmall = TextStyle(
-    fontFamily: primaryFont,
-    fontSize: 12,
-    fontWeight: medium,
-    letterSpacing: 0.1,
+  static TextStyle get titleSmall => GoogleFonts.inter(
+    fontSize: FontConstants.titleSmall,
+    fontWeight: FontConstants.medium,
+    letterSpacing: FontConstants.letterSpacingWide,
     color: AppColors.textPrimary,
   );
 
   // Body Styles
-  static const TextStyle bodyLarge = TextStyle(
-    fontFamily: secondaryFont,
-    fontSize: 14,
-    fontWeight: regular,
-    letterSpacing: 0.5,
+  static TextStyle get bodyLarge => GoogleFonts.inter(
+    fontSize: FontConstants.bodyLarge,
+    fontWeight: FontConstants.regular,
+    letterSpacing: FontConstants.letterSpacingWidest,
     color: AppColors.textPrimary,
   );
 
-  static const TextStyle bodyMedium = TextStyle(
-    fontFamily: secondaryFont,
-    fontSize: 12,
-    fontWeight: regular,
-    letterSpacing: 0.25,
+  // Name-Desktop/Body/MediumRegular
+  static TextStyle get bodyMedium => GoogleFonts.inter(
+    fontSize: FontConstants.bodyLarge,
+    fontWeight: FontConstants.semiBold, // Medium weight for MediumRegular
+    letterSpacing: FontConstants.letterSpacingWider,
     color: AppColors.textPrimary,
   );
 
-  static const TextStyle bodySmall = TextStyle(
-    fontFamily: secondaryFont,
-    fontSize: 10,
-    fontWeight: regular,
-    letterSpacing: 0.4,
+  // Name-Desktop/Body/MediumRegular
+  static TextStyle get bodyMedium1 => GoogleFonts.inter(
+    fontSize: FontConstants.bodyMedium,
+    fontWeight: FontConstants.semiBold, // Medium weight for MediumRegular
+    letterSpacing: FontConstants.letterSpacingWider,
+    color: AppColors.textPrimary,
+  );
+
+  static TextStyle get bodySmall => GoogleFonts.inter(
+    fontSize: FontConstants.bodySmall,
+    fontWeight: FontConstants.regular,
+    letterSpacing: FontConstants.letterSpacingWidest,
     color: AppColors.textSecondary,
   );
 
   // Label Styles
-  static const TextStyle labelLarge = TextStyle(
-    fontFamily: secondaryFont,
-    fontSize: 12,
-    fontWeight: medium,
-    letterSpacing: 0.1,
+  static TextStyle get labelLarge => GoogleFonts.inter(
+    fontSize: FontConstants.labelLarge,
+    fontWeight: FontConstants.medium,
+    letterSpacing: FontConstants.letterSpacingWide,
     color: AppColors.textPrimary,
   );
 
-  static const TextStyle labelMedium = TextStyle(
-    fontFamily: secondaryFont,
-    fontSize: 10,
-    fontWeight: medium,
-    letterSpacing: 0.5,
+  static TextStyle get labelMedium => GoogleFonts.inter(
+    fontSize: FontConstants.labelMedium,
+    fontWeight: FontConstants.medium,
+    letterSpacing: FontConstants.letterSpacingWidest,
     color: AppColors.textSecondary,
   );
 
-  static const TextStyle labelSmall = TextStyle(
-    fontFamily: secondaryFont,
-    fontSize: 13,
-    fontWeight: medium,
-    letterSpacing: 0.5,
-    color: AppColors.textTertiary,
+  static TextStyle get labelSmall => GoogleFonts.inter(
+    fontSize: FontConstants.labelSmall,
+    fontWeight: FontConstants.medium,
+    letterSpacing: FontConstants.letterSpacingWidest,
+    color: AppColors.textPrimary,
+  );
+
+  static TextStyle get labelSmallLogin => GoogleFonts.inter(
+    fontSize: FontConstants.labelSmall,
+    fontWeight: FontConstants.medium,
+    letterSpacing: FontConstants.letterSpacingWidest,
+    color: AppColors.textPrimary,
   );
 
   // Button Styles
-  static const TextStyle buttonLarge = TextStyle(
-    fontFamily: primaryFont,
-    fontSize: 15,
-    fontWeight: semiBold,
-    letterSpacing: 0.1,
+  static TextStyle get buttonLarge => GoogleFonts.inter(
+    fontSize: FontConstants.buttonLarge,
+    fontWeight: FontConstants.semiBold,
+    letterSpacing: FontConstants.letterSpacingWide,
     color: AppColors.textInverse,
   );
 
-  static const TextStyle buttonMedium = TextStyle(
-    fontFamily: primaryFont,
-    fontSize: 13,
-    fontWeight: semiBold,
-    letterSpacing: 0.1,
+  static TextStyle get buttonMedium => GoogleFonts.inter(
+    fontSize: FontConstants.buttonMedium,
+    fontWeight: FontConstants.semiBold,
+    letterSpacing: FontConstants.letterSpacingWide,
     color: AppColors.textInverse,
   );
 
-  static const TextStyle buttonSmall = TextStyle(
-    fontFamily: primaryFont,
-    fontSize: 12,
-    fontWeight: semiBold,
-    letterSpacing: 0.1,
+  static TextStyle get buttonSmall => GoogleFonts.inter(
+    fontSize: FontConstants.buttonSmall,
+    fontWeight: FontConstants.semiBold,
+    letterSpacing: FontConstants.letterSpacingWide,
     color: AppColors.textInverse,
   );
 
   // Caption Styles
-  static const TextStyle caption = TextStyle(
-    fontFamily: secondaryFont,
-    fontSize: 11,
-    fontWeight: regular,
-    letterSpacing: 0.4,
+  static TextStyle get caption => GoogleFonts.inter(
+    fontSize: FontConstants.caption,
+    fontWeight: FontConstants.regular,
+    letterSpacing: FontConstants.letterSpacingWidest,
     color: AppColors.textTertiary,
   );
 
-  static const TextStyle overline = TextStyle(
-    fontFamily: secondaryFont,
-    fontSize: 11,
-    fontWeight: medium,
-    letterSpacing: 1.5,
+  static TextStyle get overline => GoogleFonts.inter(
+    fontSize: FontConstants.overline,
+    fontWeight: FontConstants.medium,
+    letterSpacing: FontConstants.letterSpacingExtraWide,
     color: AppColors.textTertiary,
+  );
+
+  // Filter Text Style - Color: #3E4B5A, Size: 14, Weight: 400, Font: Inter
+  static TextStyle get filterText => GoogleFonts.inter(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    letterSpacing: FontConstants.letterSpacingNormal,
+    color: const Color(0xFFCBD5E2),
   );
 }

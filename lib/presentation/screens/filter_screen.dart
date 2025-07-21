@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:streamnest/core/constants/font_constants.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../providers/filter_data_provider.dart';
@@ -277,8 +278,8 @@ class _FilterScreenState extends State<FilterScreen> {
                                   ? AppColors.textInverse
                                   : AppColors.textPrimary,
                               fontWeight: isSelected
-                                  ? AppTypography.semiBold
-                                  : AppTypography.medium,
+                                  ? FontConstants.semiBold
+                                  : FontConstants.medium,
                             ),
                           ),
                           if (isSelected) ...[
@@ -293,7 +294,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                 '${selectedIndex + 1}',
                                 style: AppTypography.labelSmall.copyWith(
                                   color: AppColors.textInverse,
-                                  fontWeight: AppTypography.bold,
+                                  fontWeight: FontConstants.bold,
                                 ),
                               ),
                             ),
@@ -320,7 +321,7 @@ class _FilterScreenState extends State<FilterScreen> {
               label: Text(
                 'Clear All Other Factors',
                 style: AppTypography.labelMedium.copyWith(
-                  fontWeight: AppTypography.semiBold,
+                  fontWeight: FontConstants.semiBold,
                 ),
               ),
               style: OutlinedButton.styleFrom(
@@ -429,7 +430,7 @@ class _FilterScreenState extends State<FilterScreen> {
                             child: Text(
                               'Skip',
                               style: AppTypography.titleMedium.copyWith(
-                                fontWeight: AppTypography.semiBold,
+                                fontWeight: FontConstants.semiBold,
                               ),
                             ),
                           ),
@@ -459,7 +460,7 @@ class _FilterScreenState extends State<FilterScreen> {
                             child: Text(
                               'Set Preferences',
                               style: AppTypography.titleMedium.copyWith(
-                                fontWeight: AppTypography.semiBold,
+                                fontWeight: FontConstants.semiBold,
                               ),
                             ),
                           ),
@@ -489,14 +490,14 @@ class _FilterScreenState extends State<FilterScreen> {
             Text(
               title,
               style: AppTypography.titleMedium.copyWith(
-                fontWeight: AppTypography.bold,
+                fontWeight: FontConstants.bold,
               ),
             ),
             Spacer(),
             Text(
               subtitle,
               style: AppTypography.titleMedium.copyWith(
-                fontWeight: AppTypography.bold,
+                fontWeight: FontConstants.bold,
               ),
             ),
           ],
@@ -852,8 +853,8 @@ class _FilterScreenState extends State<FilterScreen> {
                                   ? AppColors.textInverse
                                   : AppColors.textPrimary,
                               fontWeight: isSelected
-                                  ? AppTypography.semiBold
-                                  : AppTypography.medium,
+                                  ? FontConstants.semiBold
+                                  : FontConstants.medium,
                             ),
                           ),
                           if (isSelected) ...[
@@ -868,7 +869,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                 '${selectedIndex + 1}',
                                 style: AppTypography.labelSmall.copyWith(
                                   color: AppColors.textInverse,
-                                  fontWeight: AppTypography.bold,
+                                  fontWeight: FontConstants.bold,
                                 ),
                               ),
                             ),
@@ -895,7 +896,7 @@ class _FilterScreenState extends State<FilterScreen> {
               label: Text(
                 'Clear All Preferences',
                 style: AppTypography.labelMedium.copyWith(
-                  fontWeight: AppTypography.semiBold,
+                  fontWeight: FontConstants.semiBold,
                 ),
               ),
               style: OutlinedButton.styleFrom(

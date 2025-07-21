@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:streamnest/core/constants/font_constants.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../../presentation/theme/app_typography.dart';
 
@@ -81,8 +82,8 @@ class _MoviesScreenState extends State<MoviesScreen>
                             ? AppColors.textInverse
                             : AppColors.textPrimary,
                         fontWeight: isSelected
-                            ? AppTypography.semiBold
-                            : AppTypography.medium,
+                            ? FontConstants.semiBold
+                            : FontConstants.medium,
                       ),
                     ),
                   ),
@@ -195,7 +196,7 @@ class _MoviesScreenState extends State<MoviesScreen>
                 Text(
                   title,
                   style: AppTypography.labelMedium.copyWith(
-                    fontWeight: AppTypography.semiBold,
+                    fontWeight: FontConstants.semiBold,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

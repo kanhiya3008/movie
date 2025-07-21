@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:streamnest/core/constants/font_constants.dart';
 import '../../core/constants/app_constants.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../../presentation/theme/app_typography.dart';
@@ -165,7 +166,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
             Text(
               'No Watch List Yet',
               style: AppTypography.headlineMedium.copyWith(
-                fontWeight: AppTypography.bold,
+                fontWeight: FontConstants.bold,
               ),
               textAlign: TextAlign.center,
             ),

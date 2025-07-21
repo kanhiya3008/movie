@@ -57,6 +57,9 @@ dependencies:
   # WebView for YouTube Player
   webview_flutter: ^4.4.2
   
+  # Google Fonts
+  google_fonts: ^6.1.0
+  
 
 
 dev_dependencies:

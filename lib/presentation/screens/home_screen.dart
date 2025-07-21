@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:streamnest/core/constants/font_constants.dart';
 import 'package:streamnest/presentation/screens/heroShimmerEffect.dart';
 import 'dart:async';
 import 'package:streamnest/presentation/screens/widgets/heroidgets.dart';
@@ -59,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
             : Text(
                 _screenTitles[_currentIndex],
                 style: AppTypography.titleLarge.copyWith(
-                  fontWeight: AppTypography.bold,
+                  fontWeight: FontConstants.bold,
                 ),
               ),
         centerTitle: false,
@@ -100,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Text(
                 'Sign Up',
                 style: AppTypography.labelMedium.copyWith(
-                  fontWeight: AppTypography.semiBold,
+                  fontWeight: FontConstants.semiBold,
                 ),
               ),
             ),
@@ -190,8 +191,8 @@ class _HomeScreenState extends State<HomeScreen> {
         title,
         style: AppTypography.titleMedium.copyWith(
           fontWeight: isSelected
-              ? AppTypography.semiBold
-              : AppTypography.medium,
+              ? FontConstants.semiBold
+              : FontConstants.medium,
           color: AppColors.textPrimary,
         ),
       ),
@@ -414,7 +415,7 @@ class _HomeContentState extends State<HomeContent>
                             Text(
                               'Oops! Something went wrong',
                               style: AppTypography.titleLarge.copyWith(
-                                fontWeight: AppTypography.bold,
+                                fontWeight: FontConstants.bold,
                                 color: AppColors.error,
                               ),
                             ),
@@ -522,7 +523,7 @@ class _HomeContentState extends State<HomeContent>
                             Text(
                               'No collections available',
                               style: AppTypography.titleMedium.copyWith(
-                                fontWeight: AppTypography.semiBold,
+                                fontWeight: FontConstants.semiBold,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -595,7 +596,7 @@ class _HomeContentState extends State<HomeContent>
               child: Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 child: SectionHeader(
-                  title: skeletonCollections[i].toUpperCase(),
+                  title: skeletonCollections[i],
                   subtitle: 'Loading...',
                   showSeeAll: false,
                 ),
@@ -637,7 +638,7 @@ class _HomeContentState extends State<HomeContent>
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 16),
                   child: SectionHeader(
-                    title: collection.collection.name.toUpperCase(),
+                    title: collection.collection.name,
                     subtitle: "",
                     // ${collection.movies.length} movies available',
                     showSeeAll: true,
@@ -955,7 +956,7 @@ class _HomeContentState extends State<HomeContent>
                                                 .copyWith(
                                                   color: AppColors.textInverse,
                                                   fontWeight:
-                                                      AppTypography.bold,
+                                                      FontConstants.bold,
                                                 ),
                                           ),
                                         ],
@@ -970,7 +971,7 @@ class _HomeContentState extends State<HomeContent>
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.black38,
+                                      color: Colors.black45,
 
                                       boxShadow: [
                                         BoxShadow(
@@ -982,7 +983,7 @@ class _HomeContentState extends State<HomeContent>
                                     ),
                                     child: const Icon(
                                       Icons.play_arrow,
-                                      color: AppColors.textInverse,
+                                      color: AppColors.textPrimary,
                                       size: 16,
                                     ),
                                   ),
@@ -1064,60 +1065,31 @@ class _HomeContentState extends State<HomeContent>
     }
 
     // Show shimmer loading state for featured movies if hero filter is empty and featured is loading
-    if (movieProvider.heroFilterMovies.isEmpty &&
-        movieProvider.isLoadingFeatured) {
-      return Container(
-        margin: EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: MediaQuery.of(context).size.height * 0.02,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height * 0.78,
-              child: _buildShimmerCarouselItem(),
-            ),
-          ],
-        ),
-      );
-    }
+    // if (movieProvider.heroFilterMovies.isEmpty &&
+    //     movieProvider.isLoadingFeatured) {
+    //   return Container(
+    //     margin: EdgeInsets.symmetric(
+    //       horizontal: 16,
+    //       vertical: MediaQuery.of(context).size.height * 0.02,
+    //     ),
+    //     child: Column(
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: [
+    //         Container(
+    //           height: MediaQuery.of(context).size.height * 0.78,
+    //           child: _buildShimmerCarouselItem(),
+    //         ),
+    //       ],
+    //     ),
+    //   );
+    // }
 
     // Priority order: Hero Filter Movies > Featured Movies > Collections
     List<Movie> featuredMovies = [];
 
-    // First priority: Hero Filter Movies (filtered results)
+    // // First priority: Hero Filter Movies (filtered results)
     if (movieProvider.heroFilterMovies.isNotEmpty) {
       featuredMovies = movieProvider.heroFilterMovies;
-    }
-    // Second priority: Featured Movies (fallback)
-    else if (movieProvider.featuredMovies.isNotEmpty) {
-      featuredMovies = movieProvider.featuredMovies;
-    }
-    // Third priority: First collection's movies (final fallback)
-    else if (movieProvider.collections.isNotEmpty) {
-      featuredMovies = movieProvider.collections.values.first.movies
-          .take(5)
-          .toList();
-    }
-
-    // Show shimmer when no movies are available (data is still loading)
-    if (featuredMovies.isEmpty) {
-      return Container(
-        margin: EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: MediaQuery.of(context).size.height * 0.02,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height * 0.78,
-              child: _buildShimmerCarouselItem(),
-            ),
-          ],
-        ),
-      );
     }
 
     // Start auto-sliding when carousel is built
@@ -1126,6 +1098,10 @@ class _HomeContentState extends State<HomeContent>
     });
 
     return Container(
+      decoration: BoxDecoration(
+        // color: AppColors.heroColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1149,7 +1125,7 @@ class _HomeContentState extends State<HomeContent>
                     if (movie == null || movie.title.isEmpty) {
                       return _buildShimmerCarouselItem();
                     }
-                    return _buildCarouselItem(movie);
+                    return Container(child: _buildCarouselItem(movie));
                   },
                 ),
 
@@ -1229,6 +1205,7 @@ class _HomeContentState extends State<HomeContent>
     return Container(
       margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
       decoration: BoxDecoration(
+        color: AppColors.herobackground,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
@@ -1238,11 +1215,14 @@ class _HomeContentState extends State<HomeContent>
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          child: buildMovieTab(movie, false, null, context),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: SingleChildScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            child: buildMovieTab(movie, false, null, context),
+          ),
         ),
       ),
     );

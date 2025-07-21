@@ -2,22 +2,28 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Single Color Theme - Using only 0xFF1c2838
-  static const Color primary = Color(0xFF1c2838);
-  static const Color primaryLight = Color(0xFF2a3a4a);
-  static const Color primaryDark = Color(0xFF0f1a28);
+  static const Color primary = Color(0xFF58728D);
+  static const Color primaryLight = Color(0xFF6B7F9A);
+  static const Color primaryDark = Color(0xFF4A5F7A);
+
+  static const Color containerColor = Color(0xFF3e4b5a);
+  //Color(0xFF284055)
+  static const Color heroColor = Color(0xFF627590);
+  static const Color herobackground = Color(0xFF243547);
 
   // Secondary and Accent Colors (using variations of the main color)
-  static const Color secondary = Color(0xFF1c2838);
-  static const Color accent = Color(0xFF1c2838);
+  static const Color secondary = Color(0xFF58728D);
+  static const Color accent = Color(0xFF58728D);
 
   // Background Colors
-  static const Color background = Color(0xFF1c2838);
-  static const Color surface = Color(0xFF1c2838);
-  static const Color card = Color(0xFF1c2838);
-  static const Color cardLight = Color(0xFF2a3a4a);
+  static const Color background = Color(0xFF0C1927);
+  static const Color surface = Color(0xFF0C1927);
+  static const Color card = Color(0xFF0C1927);
+  static const Color cardLight = Color(0xFF1a2a3a);
 
   // Text Colors
   static const Color textPrimary = Color(0xFFFFFFFF);
+  static const Color heroDescription = Color(0xFF192839);
   static const Color textSecondary = Color(0xFFB8B8B8);
   static const Color textTertiary = Color(0xFF8B8B8B);
   static const Color textInverse = Color(0xFF1c2838);

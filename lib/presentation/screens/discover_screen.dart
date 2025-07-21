@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:streamnest/core/constants/font_constants.dart';
 import '../../core/constants/app_constants.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../../presentation/theme/app_typography.dart';
@@ -15,7 +16,7 @@ class DiscoverScreen extends StatelessWidget {
         title: Text(
           'Discover',
           style: AppTypography.titleLarge.copyWith(
-            fontWeight: AppTypography.bold,
+            fontWeight: FontConstants.bold,
           ),
         ),
         centerTitle: true,
@@ -64,7 +65,7 @@ class DiscoverScreen extends StatelessWidget {
                           genre,
                           style: AppTypography.titleMedium.copyWith(
                             color: AppColors.textInverse,
-                            fontWeight: AppTypography.semiBold,
+                            fontWeight: FontConstants.semiBold,
                           ),
                           textAlign: TextAlign.center,
                         ),

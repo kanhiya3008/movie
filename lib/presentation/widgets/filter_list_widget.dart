@@ -4,6 +4,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../providers/filter_data_provider.dart';
 import '../../data/models/filterModel.dart';
+import '../../core/constants/font_constants.dart';
 
 class FilterListWidget extends StatefulWidget {
   final Function(String, String, String)?
@@ -186,12 +187,12 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? AppColors.primaryLight
-                          : AppColors.primaryDark,
+                          ? Color(0xFF284055)
+                          : AppColors.containerColor,
                       border: Border.all(
                         color: isSelected
                             ? AppColors.primaryLight
-                            : AppColors.textSecondary.withOpacity(0.3),
+                            : const Color(0xFF58728D),
                         width: 1,
                       ),
                       borderRadius: BorderRadius.circular(8),
@@ -210,13 +211,10 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                       children: [
                         Text(
                           categoryName,
-                          style: AppTypography.labelMedium.copyWith(
-                            color: isSelected
-                                ? AppColors.textPrimary
-                                : AppColors.textPrimary,
+                          style: AppTypography.filterText.copyWith(
                             fontWeight: isSelected
-                                ? AppTypography.semiBold
-                                : AppTypography.medium,
+                                ? FontConstants.semiBold
+                                : FontConstants.regular,
                           ),
                         ),
                         const SizedBox(width: 4),
@@ -315,7 +313,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                                 Text(
                                   '$category',
                                   style: AppTypography.titleLarge.copyWith(
-                                    fontWeight: AppTypography.bold,
+                                    fontWeight: FontConstants.bold,
                                   ),
                                 ),
                                 const Spacer(),
@@ -451,7 +449,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                                     child: Text(
                                       'Reset',
                                       style: AppTypography.titleMedium.copyWith(
-                                        fontWeight: AppTypography.semiBold,
+                                        fontWeight: FontConstants.semiBold,
                                       ),
                                     ),
                                   ),
@@ -518,7 +516,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                                     child: Text(
                                       'Apply',
                                       style: AppTypography.titleMedium.copyWith(
-                                        fontWeight: AppTypography.semiBold,
+                                        fontWeight: FontConstants.semiBold,
                                       ),
                                     ),
                                   ),
@@ -609,7 +607,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
   //                       Text(
   //                         'Select $category',
   //                         style: AppTypography.titleLarge.copyWith(
-  //                           fontWeight: AppTypography.bold,
+  //                           fontWeight: FontConstants.bold,
   //                         ),
   //                       ),
   //                       const Spacer(),
@@ -736,7 +734,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
   //                           child: Text(
   //                             'Reset',
   //                             style: AppTypography.titleMedium.copyWith(
-  //                               fontWeight: AppTypography.semiBold,
+  //                               fontWeight: FontConstants.semiBold,
   //                             ),
   //                           ),
   //                         ),
@@ -798,7 +796,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
   //                           child: Text(
   //                             'Apply',
   //                             style: AppTypography.titleMedium.copyWith(
-  //                               fontWeight: AppTypography.semiBold,
+  //                               fontWeight: FontConstants.semiBold,
   //                             ),
   //                           ),
   //                         ),
@@ -843,7 +841,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                 Text(
                   'More Platforms',
                   style: AppTypography.titleMedium.copyWith(
-                    fontWeight: AppTypography.semiBold,
+                    fontWeight: FontConstants.semiBold,
                   ),
                 ),
                 SizedBox(width: 5),
@@ -874,7 +872,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                   label,
                   style: AppTypography.titleMedium.copyWith(
                     color: AppColors.textPrimary,
-                    fontWeight: AppTypography.medium,
+                    fontWeight: FontConstants.medium,
                   ),
                 ),
                 onTap: () {
@@ -895,7 +893,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
             Text(
               'Additional Options',
               style: AppTypography.titleMedium.copyWith(
-                fontWeight: AppTypography.bold,
+                fontWeight: FontConstants.bold,
                 color: AppColors.textPrimary,
               ),
             ),
@@ -918,7 +916,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                   label,
                   style: AppTypography.titleMedium.copyWith(
                     color: AppColors.textPrimary,
-                    fontWeight: AppTypography.medium,
+                    fontWeight: FontConstants.medium,
                   ),
                 ),
                 onTap: () {
@@ -934,7 +932,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
             Text(
               'Selected Platforms',
               style: AppTypography.titleMedium.copyWith(
-                fontWeight: AppTypography.bold,
+                fontWeight: FontConstants.bold,
                 color: AppColors.textPrimary,
               ),
             ),
@@ -1027,7 +1025,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                   label,
                   style: AppTypography.titleMedium.copyWith(
                     color: AppColors.textPrimary,
-                    fontWeight: AppTypography.medium,
+                    fontWeight: FontConstants.medium,
                   ),
                 ),
                 onTap: () {
@@ -1115,7 +1113,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
             label,
             style: AppTypography.titleMedium.copyWith(
               color: AppColors.textPrimary,
-              fontWeight: AppTypography.medium,
+              fontWeight: FontConstants.medium,
             ),
           ),
           onTap: () {
@@ -1187,7 +1185,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                   customYearLabel,
                   style: AppTypography.titleMedium.copyWith(
                     color: AppColors.textPrimary,
-                    fontWeight: AppTypography.medium,
+                    fontWeight: FontConstants.medium,
                   ),
                 ),
                 onTap: () {
@@ -1281,7 +1279,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
             label,
             style: AppTypography.titleMedium.copyWith(
               color: AppColors.textPrimary,
-              fontWeight: AppTypography.medium,
+              fontWeight: FontConstants.medium,
             ),
           ),
           onTap: () {
@@ -1340,7 +1338,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                   customDurationLabel,
                   style: AppTypography.titleMedium.copyWith(
                     color: AppColors.textPrimary,
-                    fontWeight: AppTypography.medium,
+                    fontWeight: FontConstants.medium,
                   ),
                 ),
                 onTap: () {
@@ -1365,7 +1363,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                             '${customDurationValue.toInt()} min',
                             style: AppTypography.titleMedium.copyWith(
                               color: AppColors.textPrimary,
-                              fontWeight: AppTypography.medium,
+                              fontWeight: FontConstants.medium,
                             ),
                           ),
                         ],
@@ -1382,7 +1380,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                           valueIndicatorTextStyle: AppTypography.titleSmall
                               .copyWith(
                                 color: Colors.white,
-                                fontWeight: AppTypography.semiBold,
+                                fontWeight: FontConstants.semiBold,
                               ),
                         ),
                         child: Slider(
@@ -1431,7 +1429,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
             label,
             style: AppTypography.titleMedium.copyWith(
               color: AppColors.textPrimary,
-              fontWeight: AppTypography.medium,
+              fontWeight: FontConstants.medium,
             ),
           ),
           onTap: () {
@@ -1525,8 +1523,8 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                     style: AppTypography.titleMedium.copyWith(
                       color: AppColors.textPrimary,
                       fontWeight: isSelected
-                          ? AppTypography.semiBold
-                          : AppTypography.medium,
+                          ? FontConstants.semiBold
+                          : FontConstants.medium,
                     ),
                   ),
                   onTap: () {
@@ -1627,8 +1625,8 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                           style: AppTypography.titleMedium.copyWith(
                             color: AppColors.textPrimary,
                             fontWeight: isSelected
-                                ? AppTypography.semiBold
-                                : AppTypography.medium,
+                                ? FontConstants.semiBold
+                                : FontConstants.medium,
                           ),
                         ),
                         trailing: hasSubGenres
@@ -1722,8 +1720,8 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                                 style: AppTypography.bodyMedium.copyWith(
                                   color: AppColors.textPrimary,
                                   fontWeight: isSubSelected
-                                      ? AppTypography.semiBold
-                                      : AppTypography.medium,
+                                      ? FontConstants.semiBold
+                                      : FontConstants.medium,
                                 ),
                               ),
                               onTap: () {
@@ -1789,7 +1787,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
           Text(
             'Age Suitability',
             style: AppTypography.titleMedium.copyWith(
-              fontWeight: AppTypography.bold,
+              fontWeight: FontConstants.bold,
               color: AppColors.textPrimary,
             ),
           ),
@@ -1822,7 +1820,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                     label,
                     style: AppTypography.titleMedium.copyWith(
                       color: AppColors.textPrimary,
-                      fontWeight: AppTypography.medium,
+                      fontWeight: FontConstants.medium,
                     ),
                   ),
                   onTap: () {
@@ -1847,7 +1845,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
               'R & NC-17',
               style: AppTypography.titleMedium.copyWith(
                 color: AppColors.textPrimary,
-                fontWeight: AppTypography.medium,
+                fontWeight: FontConstants.medium,
               ),
             ),
             onTap: () {
@@ -1870,7 +1868,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
               'Set Custom',
               style: AppTypography.titleMedium.copyWith(
                 color: AppColors.textPrimary,
-                fontWeight: AppTypography.medium,
+                fontWeight: FontConstants.medium,
               ),
             ),
             onTap: () {
@@ -1910,7 +1908,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                       label,
                       style: AppTypography.titleMedium.copyWith(
                         color: AppColors.textPrimary,
-                        fontWeight: AppTypography.medium,
+                        fontWeight: FontConstants.medium,
                       ),
                     ),
                     onTap: () {
@@ -1949,8 +1947,8 @@ class _FilterListWidgetState extends State<FilterListWidget> {
             style: AppTypography.titleMedium.copyWith(
               color: isSelected ? AppColors.primary : AppColors.textPrimary,
               fontWeight: isSelected
-                  ? AppTypography.semiBold
-                  : AppTypography.medium,
+                  ? FontConstants.semiBold
+                  : FontConstants.medium,
             ),
           ),
           trailing: isSelected
@@ -2027,7 +2025,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                       Text(
                         'Select Platforms',
                         style: AppTypography.titleLarge.copyWith(
-                          fontWeight: AppTypography.bold,
+                          fontWeight: FontConstants.bold,
                         ),
                       ),
                       const Spacer(),
@@ -2176,8 +2174,8 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                           style: AppTypography.titleMedium.copyWith(
                             color: AppColors.textPrimary,
                             fontWeight: isSelected
-                                ? AppTypography.semiBold
-                                : AppTypography.medium,
+                                ? FontConstants.semiBold
+                                : FontConstants.medium,
                           ),
                         ),
                         trailing: Checkbox(
@@ -2247,7 +2245,7 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                       child: Text(
                         'Done',
                         style: AppTypography.titleMedium.copyWith(
-                          fontWeight: AppTypography.semiBold,
+                          fontWeight: FontConstants.semiBold,
                         ),
                       ),
                     ),

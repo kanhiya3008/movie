@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/constants/font_constants.dart';
 import 'home_screen.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -124,7 +125,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 Text(
                   _isSignUp ? 'Sign up to StreamNest' : 'Sign in to StreamNest',
                   style: AppTypography.titleLarge.copyWith(
-                    fontWeight: AppTypography.bold,
+                    fontWeight: FontConstants.bold,
                     color: AppColors.textPrimary,
                   ),
                   textAlign: TextAlign.center,
@@ -198,7 +199,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ? 'Signing in...'
                                   : 'Continue with Google',
                               style: AppTypography.labelMedium.copyWith(
-                                fontWeight: AppTypography.semiBold,
+                                fontWeight: FontConstants.semiBold,
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
@@ -372,7 +373,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 : Text(
                                     _isSignUp ? 'Sign Up' : 'Sign In',
                                     style: AppTypography.titleMedium.copyWith(
-                                      fontWeight: AppTypography.semiBold,
+                                      fontWeight: FontConstants.semiBold,
                                     ),
                                   ),
                           ),
@@ -398,7 +399,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 _isSignUp ? 'Sign In' : 'Sign Up',
                                 style: AppTypography.bodyMedium.copyWith(
                                   color: AppColors.primary,
-                                  fontWeight: AppTypography.semiBold,
+                                  fontWeight: FontConstants.semiBold,
                                 ),
                               ),
                             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:streamnest/core/constants/font_constants.dart';
 import '../../core/constants/app_constants.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../../presentation/theme/app_typography.dart';
@@ -41,7 +42,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         title: Text(
           'My Library',
           style: AppTypography.titleLarge.copyWith(
-            fontWeight: AppTypography.bold,
+            fontWeight: FontConstants.bold,
           ),
         ),
         centerTitle: true,
@@ -53,7 +54,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
             Tab(text: 'History'),
           ],
           labelStyle: AppTypography.labelMedium.copyWith(
-            fontWeight: AppTypography.semiBold,
+            fontWeight: FontConstants.semiBold,
           ),
           unselectedLabelStyle: AppTypography.labelMedium,
           indicatorColor: AppColors.primary,
@@ -227,7 +228,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
             Text(
               'No $title Yet',
               style: AppTypography.headlineMedium.copyWith(
-                fontWeight: AppTypography.bold,
+                fontWeight: FontConstants.bold,
               ),
               textAlign: TextAlign.center,
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:streamnest/core/constants/font_constants.dart';
 import '../../core/constants/app_constants.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../../presentation/theme/app_typography.dart';
@@ -15,7 +16,7 @@ class ProfileScreen extends StatelessWidget {
         title: Text(
           'Profile',
           style: AppTypography.titleLarge.copyWith(
-            fontWeight: AppTypography.bold,
+            fontWeight: FontConstants.bold,
           ),
         ),
         centerTitle: true,
@@ -87,7 +88,7 @@ class ProfileScreen extends StatelessWidget {
                   'John Doe',
                   style: AppTypography.titleLarge.copyWith(
                     color: AppColors.textInverse,
-                    fontWeight: AppTypography.bold,
+                    fontWeight: FontConstants.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -111,7 +112,7 @@ class ProfileScreen extends StatelessWidget {
                     'Premium Member',
                     style: AppTypography.labelSmall.copyWith(
                       color: AppColors.textInverse,
-                      fontWeight: AppTypography.semiBold,
+                      fontWeight: FontConstants.semiBold,
                     ),
                   ),
                 ),
@@ -183,7 +184,7 @@ class ProfileScreen extends StatelessWidget {
           Text(
             value,
             style: AppTypography.titleLarge.copyWith(
-              fontWeight: AppTypography.bold,
+              fontWeight: FontConstants.bold,
             ),
           ),
           const SizedBox(height: 4),
@@ -205,7 +206,7 @@ class ProfileScreen extends StatelessWidget {
         Text(
           'Settings',
           style: AppTypography.titleLarge.copyWith(
-            fontWeight: AppTypography.bold,
+            fontWeight: FontConstants.bold,
           ),
         ),
         const SizedBox(height: 16),
@@ -294,7 +295,7 @@ class ProfileScreen extends StatelessWidget {
         title: Text(
           title,
           style: AppTypography.titleMedium.copyWith(
-            fontWeight: AppTypography.semiBold,
+            fontWeight: FontConstants.semiBold,
           ),
         ),
         subtitle: Text(
@@ -319,7 +320,7 @@ class ProfileScreen extends StatelessWidget {
         Text(
           'Account',
           style: AppTypography.titleLarge.copyWith(
-            fontWeight: AppTypography.bold,
+            fontWeight: FontConstants.bold,
           ),
         ),
         const SizedBox(height: 16),
@@ -414,7 +415,7 @@ class ProfileScreen extends StatelessWidget {
         title: Text(
           title,
           style: AppTypography.titleMedium.copyWith(
-            fontWeight: AppTypography.semiBold,
+            fontWeight: FontConstants.semiBold,
           ),
         ),
         subtitle: Text(

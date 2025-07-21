@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/constants/font_constants.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -73,7 +74,7 @@ class _SearchScreenState extends State<SearchScreen> {
         title: Text(
           'Search',
           style: AppTypography.titleLarge.copyWith(
-            fontWeight: AppTypography.bold,
+            fontWeight: FontConstants.bold,
           ),
         ),
         centerTitle: true,
@@ -191,7 +192,7 @@ class _SearchScreenState extends State<SearchScreen> {
           Text(
             'Search for your favorite content',
             style: AppTypography.titleLarge.copyWith(
-              fontWeight: AppTypography.bold,
+              fontWeight: FontConstants.bold,
             ),
           ),
           const SizedBox(height: 8),
@@ -243,7 +244,7 @@ class _SearchScreenState extends State<SearchScreen> {
           Text(
             'No results found',
             style: AppTypography.titleLarge.copyWith(
-              fontWeight: AppTypography.bold,
+              fontWeight: FontConstants.bold,
             ),
           ),
           const SizedBox(height: 8),
@@ -295,7 +296,7 @@ class _SearchScreenState extends State<SearchScreen> {
         title: Text(
           result['title'],
           style: AppTypography.titleMedium.copyWith(
-            fontWeight: AppTypography.semiBold,
+            fontWeight: FontConstants.semiBold,
           ),
         ),
         subtitle: Column(
@@ -317,7 +318,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     result['type'],
                     style: AppTypography.labelSmall.copyWith(
                       color: AppColors.primary,
-                      fontWeight: AppTypography.semiBold,
+                      fontWeight: FontConstants.semiBold,
                     ),
                   ),
                 ),
@@ -339,7 +340,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   result['rating'],
                   style: AppTypography.bodySmall.copyWith(
                     color: AppColors.textSecondary,
-                    fontWeight: AppTypography.semiBold,
+                    fontWeight: FontConstants.semiBold,
                   ),
                 ),
               ],

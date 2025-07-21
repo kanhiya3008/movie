@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:streamnest/core/constants/font_constants.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../../presentation/theme/app_typography.dart';
 import '../widgets/section_header.dart';
@@ -88,7 +89,7 @@ class FeedScreen extends StatelessWidget {
                   Text(
                     title,
                     style: AppTypography.titleMedium.copyWith(
-                      fontWeight: AppTypography.semiBold,
+                      fontWeight: FontConstants.semiBold,
                     ),
                   ),
                   const SizedBox(height: 4),

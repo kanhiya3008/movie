@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:streamnest/core/constants/font_constants.dart';
 import 'package:streamnest/core/utils/constFunction.dart';
 import 'package:streamnest/presentation/screens/widgets/heroidgets.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -68,7 +69,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen>
             title: Text(
               "StremNest",
               style: AppTypography.titleMedium.copyWith(
-                fontWeight: AppTypography.semiBold,
+                fontWeight: FontConstants.semiBold,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -103,7 +104,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen>
                 Tab(text: 'Similar Movies'),
               ],
               labelStyle: AppTypography.titleSmall.copyWith(
-                fontWeight: AppTypography.semiBold,
+                fontWeight: FontConstants.semiBold,
               ),
 
               unselectedLabelStyle: AppTypography.labelSmall,
@@ -282,7 +283,7 @@ class _YouTubeTrailerDialogState extends State<YouTubeTrailerDialog> {
                   Text(
                     'Movie Trailer',
                     style: AppTypography.titleMedium.copyWith(
-                      fontWeight: AppTypography.semiBold,
+                      fontWeight: FontConstants.semiBold,
                     ),
                   ),
                   const Spacer(),

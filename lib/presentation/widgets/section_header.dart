@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import '../../core/constants/font_constants.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -28,8 +29,8 @@ class SectionHeader extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: AppTypography.titleMedium.copyWith(
-                  fontWeight: AppTypography.bold,
+                style: AppTypography.titleLarge.copyWith(
+                  fontWeight: FontConstants.bold,
                 ),
               ),
               // if (subtitle != null) ...[
@@ -52,7 +53,7 @@ class SectionHeader extends StatelessWidget {
         //       'See All',
         //       style: AppTypography.labelMedium.copyWith(
         //         color: AppColors.textPrimary,
-        //         fontWeight: AppTypography.semiBold,
+        //         fontWeight: FontConstants.semiBold,
         //       ),
         //     ),
         //   ),

@@ -4,6 +4,7 @@ import '../../core/constants/app_constants.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../../data/models/movie.dart';
+import '../../core/constants/font_constants.dart';
 import '../screens/movie_details_screen.dart';
 
 class MovieCard extends StatelessWidget {
@@ -186,7 +187,7 @@ class MovieCard extends StatelessWidget {
                                 rating.toStringAsFixed(1),
                                 style: AppTypography.labelSmall.copyWith(
                                   color: AppColors.textInverse,
-                                  fontWeight: AppTypography.bold,
+                                  fontWeight: FontConstants.bold,
                                 ),
                               ),
                             ],
@@ -203,9 +204,7 @@ class MovieCard extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               decoration: const BoxDecoration(
                 color: AppColors.card,
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(8),
-                ),
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(8)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,7 +212,7 @@ class MovieCard extends StatelessWidget {
                   Text(
                     title,
                     style: AppTypography.labelMedium.copyWith(
-                      fontWeight: AppTypography.semiBold,
+                      fontWeight: FontConstants.semiBold,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
