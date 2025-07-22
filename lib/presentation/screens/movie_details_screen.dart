@@ -117,19 +117,24 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen>
           body: TabBarView(
             controller: _tabController,
             children: [
-              Padding(
-                padding: EdgeInsets.all(
-                  MediaQuery.of(context).size.width < 360
-                      ? 12.0
-                      : MediaQuery.of(context).size.width < 480
-                      ? 14.0
-                      : 16.0,
-                ),
-                child: buildMovieTab(
-                  movie,
-                  isLoadingDetails,
-                  detailsError,
-                  context,
+              Container(
+                color: AppColors.herobackground,
+                child: Padding(
+                  padding: EdgeInsets.all(
+                    MediaQuery.of(context).size.width < 360
+                        ? 12.0
+                        : MediaQuery.of(context).size.width < 480
+                        ? 14.0
+                        : 16.0,
+                  ),
+                  child: Container(
+                    child: buildMovieTab(
+                      movie,
+                      isLoadingDetails,
+                      detailsError,
+                      context,
+                    ),
+                  ),
                 ),
               ),
               buildCastTab(movie, isLoadingDetails, detailsError, context),

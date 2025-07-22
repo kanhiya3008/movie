@@ -1,3 +1,89 @@
+class FeedModel {
+  final int id;
+  final int userId;
+  final String title;
+  final String content;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final DateTime? seenAt;
+  final Movie? movie;
+  final List<Author> authors;
+
+  FeedModel({
+    required this.id,
+    required this.userId,
+    required this.title,
+    required this.content,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.seenAt,
+    required this.movie,
+    required this.authors,
+  });
+
+  factory FeedModel.fromJson(Map<String, dynamic> json) {
+    return FeedModel(
+      id: json['id'] ?? 0,
+      userId: json['userId'] ?? 0,
+      title: json['title'] ?? '',
+      content: json['content'] ?? '',
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'])
+          : null,
+      seenAt: json['seenAt'] != null ? DateTime.tryParse(json['seenAt']) : null,
+      movie: json['movie'] != null ? Movie.fromJson(json['movie']) : null,
+      authors:
+          (json['authors'] as List<dynamic>?)
+              ?.map((e) => Author.fromJson(e))
+              .toList() ??
+          [],
+    );
+  }
+}
+
+class MovieGenre {
+  final int id;
+  final String name;
+
+  MovieGenre({required this.id, required this.name});
+
+  factory MovieGenre.fromJson(Map<String, dynamic> json) {
+    return MovieGenre(id: json['id'] ?? 0, name: json['name'] ?? '');
+  }
+}
+
+class Author {
+  final int id;
+  final String email;
+  final String? username;
+  final String firstName;
+  final String lastName;
+  final String avatarUrl;
+
+  Author({
+    required this.id,
+    required this.email,
+    this.username,
+    required this.firstName,
+    required this.lastName,
+    required this.avatarUrl,
+  });
+
+  factory Author.fromJson(Map<String, dynamic> json) {
+    return Author(
+      id: json['id'] ?? 0,
+      email: json['email'] ?? '',
+      username: json['username'],
+      firstName: json['firstName'] ?? '',
+      lastName: json['lastName'] ?? '',
+      avatarUrl: json['avatarUrl'] ?? '',
+    );
+  }
+}
+
 class MovieCollectionResponse {
   final List<Movie> movies;
   final Collection collection;

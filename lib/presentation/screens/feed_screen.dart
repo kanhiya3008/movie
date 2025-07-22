@@ -1,110 +1,165 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:streamnest/core/constants/font_constants.dart';
 import '../../presentation/theme/app_colors.dart';
 import '../../presentation/theme/app_typography.dart';
 import '../widgets/section_header.dart';
+import '../providers/movie_provider.dart';
+import 'widgets/heroidgets.dart';
+import '../../data/models/movie.dart';
 
-class FeedScreen extends StatelessWidget {
+class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        // Content
-        SliverPadding(
-          padding: const EdgeInsets.all(16),
-          sliver: SliverList(
-            delegate: SliverChildListDelegate([
-              // Feed Header
-              const SectionHeader(
-                title: 'Your Feed',
-                subtitle: 'Personalized recommendations',
-                showSeeAll: false,
-              ),
-              const SizedBox(height: 16),
+  State<FeedScreen> createState() => _FeedScreenState();
+}
 
-              // Feed Content
-              _buildFeedItem(
-                title: 'Welcome to StreamNest',
-                subtitle: 'Start exploring your favorite content',
-                icon: Icons.movie,
-              ),
-
-              const SizedBox(height: 16),
-
-              _buildFeedItem(
-                title: 'Discover New Movies',
-                subtitle: 'Find hidden gems and popular hits',
-                icon: Icons.explore,
-              ),
-
-              const SizedBox(height: 16),
-
-              _buildFeedItem(
-                title: 'Create Your Watchlist',
-                subtitle: 'Save movies you want to watch later',
-                icon: Icons.bookmark_add,
-              ),
-
-              const SizedBox(height: 16),
-
-              _buildFeedItem(
-                title: 'Rate and Review',
-                subtitle: 'Share your thoughts on movies',
-                icon: Icons.star,
-              ),
-
-              const SizedBox(height: 100), // Bottom padding
-            ]),
-          ),
-        ),
-      ],
-    );
+class _FeedScreenState extends State<FeedScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Call loadFeedMovies with default/empty filter
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final movieProvider = context.read<MovieProvider>();
+      movieProvider.loadFeedMovies({
+        "availability": null,
+        "genre": [],
+        "releaseYear": "",
+        "languages": [],
+        "rating": "",
+        "duration": "",
+        "ageSuitability": [],
+      });
+    });
   }
 
-  Widget _buildFeedItem({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-  }) {
-    return Card(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, size: 24, color: AppColors.primary),
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<MovieProvider>(
+      builder: (context, movieProvider, child) {
+        if (movieProvider.isLoadingFeed) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (movieProvider.feedError != null) {
+          return Center(
+            child: Text(
+              movieProvider.feedError!,
+              style: AppTypography.titleMedium.copyWith(color: AppColors.error),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: AppTypography.titleMedium.copyWith(
-                      fontWeight: FontConstants.semiBold,
+          );
+        }
+        return CustomScrollView(
+          slivers: [
+            // Content
+            SliverPadding(
+              padding: const EdgeInsets.all(0),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  // Feed Items
+                  ...movieProvider.feedItems.map((item) {
+                    final movie = item.movie;
+                    final title = item.title;
+                    final content = item.content;
+                    final authors = item.authors;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: Container(
+                        color: AppColors.herobackground,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (authors.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Row(
+                                    children: [
+                                      // First author avatar
+                                      CircleAvatar(
+                                        radius: 18,
+                                        backgroundImage: NetworkImage(
+                                          authors[0].avatarUrl,
+                                        ),
+                                        backgroundColor: AppColors.primary
+                                            .withOpacity(0.1),
+                                      ),
+                                      if (authors.length > 1) ...[
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '+${authors.length - 1}',
+                                          style: AppTypography.bodySmall
+                                              .copyWith(
+                                                color: AppColors.primary,
+                                                fontWeight: FontConstants.bold,
+                                              ),
+                                        ),
+                                      ],
+                                      const SizedBox(width: 12),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          if (title.isNotEmpty)
+                                            Text(
+                                              title,
+                                              style: AppTypography.titleSmall
+                                                  .copyWith(
+                                                    fontWeight:
+                                                        FontConstants.bold,
+                                                  ),
+                                            ),
+                                          if (content.isNotEmpty)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                bottom: 8,
+                                              ),
+                                              child: Text(
+                                                content,
+                                                style: AppTypography.labelSmall
+                                                    .copyWith(
+                                                      fontWeight: FontConstants
+                                                          .semiBold,
+                                                    ),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              if (movie != null)
+                                buildMovieTab(movie, false, null, context),
+                              if (movie == null)
+                                Text(
+                                  'No movie data',
+                                  style: AppTypography.bodySmall.copyWith(
+                                    color: AppColors.error,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                  if (movieProvider.feedMovies.isEmpty)
+                    Center(
+                      child: Text(
+                        'No feed movies found.',
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
+                  const SizedBox(height: 100), // Bottom padding
+                ]),
               ),
             ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 }

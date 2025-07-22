@@ -128,6 +128,7 @@ Widget buildMovieTab(
 
   return SingleChildScrollView(
     child: Container(
+      // color: AppColors.herobackground,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -407,50 +408,6 @@ Widget buildMovieTab(
                             ),
                           ],
                         ),
-
-                        // Rating Section
-                        if (movie.rating != null) ...[
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.accent,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      Icons.star,
-                                      size: 16,
-                                      color: AppColors.textInverse,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      movie.rating.toString(),
-                                      style: AppTypography.labelMedium.copyWith(
-                                        color: AppColors.textInverse,
-                                        fontWeight: FontConstants.semiBold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'User Rating',
-                                style: AppTypography.bodyMedium.copyWith(
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
                       ],
                     ),
                   ),
@@ -526,7 +483,8 @@ Widget buildMovieTab(
             ],
           ),
           // Cast Preview and Streaming OTT - Row Layout
-          if (movie.cast.isNotEmpty || movie.streamingPlatforms.isNotEmpty) ...[
+          if (movie.cast.isNotEmpty ||
+              (movie.streamingPlatforms ?? []).isNotEmpty) ...[
             SizedBox(height: 16),
 
             Row(
@@ -690,7 +648,7 @@ Widget buildMovieTab(
                 ],
 
                 // Streaming OTT Platforms - Right Side
-                if (movie.streamingPlatforms.isNotEmpty) ...[
+                if ((movie.streamingPlatforms ?? []).isNotEmpty) ...[
                   const SizedBox(width: 16),
                   Expanded(
                     child: SizedBox(
@@ -702,9 +660,10 @@ Widget buildMovieTab(
                             controller: streamingScrollController,
                             scrollDirection: Axis.horizontal,
                             reverse: true, // Show from right to left
-                            itemCount: movie.streamingPlatforms.length,
+                            itemCount: (movie.streamingPlatforms ?? []).length,
                             itemBuilder: (context, index) {
-                              final platform = movie.streamingPlatforms[index];
+                              final platform =
+                                  (movie.streamingPlatforms ?? [])[index];
                               return Container(
                                 width: 50,
                                 height: 80,
@@ -1556,7 +1515,9 @@ Widget buildDescriptionSection(String description) {
   return LayoutBuilder(
     builder: (context, constraints) {
       final textSpan = TextSpan(
-        text: description,
+        text:
+            description ??
+            "Log in to see why our AI thinks you'll love this, based on your past movie choices and preferences.",
         style: AppTypography.bodyMedium.copyWith(
           color: AppColors.textSecondary,
           height: 1.5,

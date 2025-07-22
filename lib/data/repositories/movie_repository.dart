@@ -1,5 +1,6 @@
 import 'package:streamnest/data/models/collectionModel.dart';
 import 'package:streamnest/data/models/movie.dart';
+import 'package:streamnest/data/models/feedModel.dart';
 import '../datasources/streamnest_api_service.dart';
 
 class MovieRepository {
@@ -148,6 +149,47 @@ class MovieRepository {
       }
     } catch (e) {
       print('Error in repository for similar movies: $e');
+      throw Exception("Network error: $e");
+    }
+  }
+
+  Future<List<FeedModel>> fetchFeedMovies(
+    Map<String, dynamic> filterParams,
+  ) async {
+    try {
+      // Create the same request body structure as fetchCollection
+      final requestBody = {
+        "ageSuitability": filterParams['ageSuitability'] ?? null,
+        "availability": {
+          "filter": filterParams['availability']?['filter'] ?? "",
+          "platforms": filterParams['availability']?['platforms'] ?? [],
+          "modifications": filterParams['availability']?['modifications'] ?? [],
+        },
+        "duration": filterParams['duration'] ?? null,
+        "genre": filterParams['genre'] ?? null,
+        "languages": filterParams['languages'] ?? [],
+        "rating": filterParams['rating'] ?? null,
+        "limit": 20,
+      };
+
+      print('Fetching feed movies with request body: $requestBody');
+
+      final response = await _apiService.post('/feed', requestBody);
+
+      final data = response.data;
+      print('Raw feed response:');
+      print(data);
+      print('Type of data: ${data.runtimeType}');
+
+      if (data is List) {
+        return data.map((item) => FeedModel.fromJson(item)).toList();
+      } else {
+        throw Exception(
+          "Feed API did not return a list. Type: ${data?.runtimeType}",
+        );
+      }
+    } catch (e) {
+      print('Error in repository for feed movies: $e');
       throw Exception("Network error: $e");
     }
   }

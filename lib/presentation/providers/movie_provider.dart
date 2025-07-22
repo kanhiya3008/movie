@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../../data/repositories/movie_repository.dart';
 import '../../data/models/movie.dart';
+import '../../data/models/feedModel.dart';
 
 class MovieProvider extends ChangeNotifier {
   final MovieRepository _repository;
@@ -20,6 +21,10 @@ class MovieProvider extends ChangeNotifier {
   List<Movie> _similarMovies = [];
   bool _isLoadingSimilar = false;
   String? _similarError;
+
+  List<FeedModel> _feedItems = [];
+  bool _isLoadingFeed = false;
+  String? _feedError;
 
   // Cast state
   List<Cast> _movieCast = [];
@@ -54,6 +59,15 @@ class MovieProvider extends ChangeNotifier {
   List<Movie> get similarMovies => _similarMovies;
   bool get isLoadingSimilar => _isLoadingSimilar;
   String? get similarError => _similarError;
+
+  List<FeedModel> get feedItems => _feedItems;
+  // Remove the feedMovies getter, as FeedModel already exposes .movie
+  // If you want to keep it:
+  List<Movie> get feedMovies =>
+      _feedItems.map((f) => f.movie).whereType<Movie>().toList();
+
+  bool get isLoadingFeed => _isLoadingFeed;
+  String? get feedError => _feedError;
 
   // Cast getters
   List<Cast> get movieCast => _movieCast;
@@ -189,6 +203,22 @@ class MovieProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> loadFeedMovies(Map<String, dynamic> filterParams) async {
+    _setLoadingFeed(true);
+    _clearFeedError();
+
+    try {
+      _feedItems = await _repository.fetchFeedMovies(filterParams);
+      print('Feed items loaded:');
+      print(_feedItems);
+      notifyListeners();
+    } catch (e) {
+      _setFeedError(e.toString());
+    } finally {
+      _setLoadingFeed(false);
+    }
+  }
+
   /// Load cast information for a given movie ID
   Future<void> loadMovieCast(String movieId) async {
     _setLoadingCast(true);
@@ -281,9 +311,17 @@ class MovieProvider extends ChangeNotifier {
     _similarError = null;
   }
 
+  void _clearFeedError() {
+    _feedError = null;
+  }
+
   /// Set similar movies error
   void _setSimilarError(String error) {
     _similarError = error;
+  }
+
+  void _setFeedError(String error) {
+    _feedError = error;
   }
 
   /// Clear cast error
@@ -311,6 +349,12 @@ class MovieProvider extends ChangeNotifier {
   /// Set similar movies loading state
   void _setLoadingSimilar(bool loading) {
     _isLoadingSimilar = loading;
+    notifyListeners();
+  }
+
+  /// Set feed movies loading state
+  void _setLoadingFeed(bool loading) {
+    _isLoadingFeed = loading;
     notifyListeners();
   }
 
