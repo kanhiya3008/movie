@@ -357,8 +357,13 @@ class _FilterScreenState extends State<FilterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildSection(
-                          title: 'Region of Residence',
-                          subtitle: 'Skip',
+                          title: 'Residence',
+                          subtitle: "",
+                          trailing: IconButton(
+                            icon: const Icon(Icons.close, size: 20),
+                            color: AppColors.textSecondary,
+                            onPressed: _navigateToHome,
+                          ),
                           child: _buildRegionSelector(filterDataProvider),
                         ),
 
@@ -366,7 +371,7 @@ class _FilterScreenState extends State<FilterScreen> {
 
                         // OTT Channel Selection
                         _buildSection(
-                          title: 'OTT Channels',
+                          title: 'My OTT Channels',
                           subtitle: '',
                           child: _buildChannelSelector(filterDataProvider),
                         ),
@@ -382,12 +387,12 @@ class _FilterScreenState extends State<FilterScreen> {
 
                         const SizedBox(height: 24),
 
-                        // Other Factors
-                        _buildSection(
-                          title: 'Other Factors',
-                          subtitle: '',
-                          child: _buildOtherFactorsSelector(filterDataProvider),
-                        ),
+                        // // Other Factors
+                        // _buildSection(
+                        //   title: 'Other Factors',
+                        //   subtitle: '',
+                        //   child: _buildOtherFactorsSelector(filterDataProvider),
+                        // ),
 
                         const SizedBox(
                           height: 100,
@@ -481,6 +486,7 @@ class _FilterScreenState extends State<FilterScreen> {
     required String title,
     required String subtitle,
     required Widget child,
+    Widget? trailing,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -500,6 +506,8 @@ class _FilterScreenState extends State<FilterScreen> {
                 fontWeight: FontConstants.bold,
               ),
             ),
+            const Spacer(),
+            if (trailing != null) trailing,
           ],
         ),
 
@@ -510,6 +518,8 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   Widget _buildRegionSelector(FilterDataProvider filterDataProvider) {
+
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background,
@@ -526,7 +536,7 @@ class _FilterScreenState extends State<FilterScreen> {
         items:
             filterDataProvider.countries?.map((country) {
               return DropdownMenuItem(
-                value: country.name ?? '',
+                value: country.countryCode,
                 child: Text(country.name ?? ''),
               );
             }).toList() ??
@@ -542,32 +552,30 @@ class _FilterScreenState extends State<FilterScreen> {
 
   Widget _buildChannelSelector(FilterDataProvider filterDataProvider) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Search Field
         TextField(
           onChanged: _filterChannels,
           decoration: InputDecoration(
-            hintText: 'Search OTT channels...',
+            hintText: 'Search OTT Platform',
             hintStyle: TextStyle(color: AppColors.textSecondary),
             prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
             filled: true,
             fillColor: AppColors.card,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
+              borderSide: BorderSide(color: Colors.grey.shade800, width: 1),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
+              borderSide: BorderSide(color: Colors.grey.shade800, width: 1),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: Colors.blue, width: 2),
             ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
           style: TextStyle(color: AppColors.textPrimary),
         ),
@@ -575,98 +583,96 @@ class _FilterScreenState extends State<FilterScreen> {
         const SizedBox(height: 16),
 
         // Selected Channels
+        // Selected Channels
         if (filterDataProvider.selectedChannels.isNotEmpty) ...[
           Wrap(
-            spacing: 12,
-            runSpacing: 12,
+            spacing: 16,
+            runSpacing: 16,
             children: filterDataProvider.selectedChannels.map((channel) {
-              // Find the platform data to get the logo
-              final platform = filterDataProvider.streamingPlatforms
-                  ?.firstWhere(
+              final platform = filterDataProvider.streamingPlatforms?.firstWhere(
                     (p) => p.name == channel,
-                    orElse: () => StreamingPlatform(),
-                  );
+                orElse: () => StreamingPlatform(),
+              );
 
-              return Container(
-                padding: const EdgeInsets.all(8),
-                child: Stack(
-                  children: [
-                    // Square image container
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: AppColors.primary.withOpacity(0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: platform?.logo != null
-                            ? Image.network(
-                                platform!.logo!,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: AppColors.primary.withOpacity(0.1),
-                                    child: Icon(
-                                      Icons.tv,
-                                      color: AppColors.primary,
-                                      size: 24,
-                                    ),
-                                  );
-                                },
-                              )
-                            : Container(
-                                color: AppColors.primary.withOpacity(0.1),
-                                child: Icon(
-                                  Icons.tv,
-                                  color: AppColors.primary,
-                                  size: 24,
-                                ),
-                              ),
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // Platform logo square
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        color: AppColors.primary.withOpacity(0.2),
+                        width: 1,
                       ),
                     ),
-                    // Red minus button positioned inside the container
-                    Positioned(
-                      top: 2,
-                      right: 2,
-                      child: GestureDetector(
-                        onTap: () => filterDataProvider.removeChannel(channel),
-                        child: Container(
-                          width: 20,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 1.5),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 3,
-                                offset: const Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.remove,
-                            color: Colors.white,
-                            size: 12,
-                          ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: platform?.logo != null
+                          ? Image.network(
+                        platform!.logo!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: AppColors.primary.withOpacity(0.1),
+                            child: Icon(
+                              Icons.tv,
+                              color: AppColors.primary,
+                              size: 16,
+                            ),
+                          );
+                        },
+                      )
+                          : Container(
+                        color: AppColors.primary.withOpacity(0.1),
+                        child: Icon(
+                          Icons.tv,
+                          color: AppColors.primary,
+                          size: 24,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+
+                  // White minus button with shadow
+                  Positioned(
+                    top: -8,
+                    right: -8,
+                    child: GestureDetector(
+                      onTap: () => filterDataProvider.removeChannel(channel),
+                      child: Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(6),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.25),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.remove,
+                          color: Colors.black,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               );
             }).toList(),
           ),
           const SizedBox(height: 16),
         ],
 
-        // Channel List
+
+        // Channel List (Checkbox > Image > Name)
         Container(
           height: 200,
           decoration: BoxDecoration(
@@ -677,45 +683,14 @@ class _FilterScreenState extends State<FilterScreen> {
             itemCount: filteredChannels.length,
             itemBuilder: (context, index) {
               final channel = filteredChannels[index];
-              final isSelected = filterDataProvider.selectedChannels.contains(
-                channel,
+              final isSelected = filterDataProvider.selectedChannels.contains(channel);
+
+              final platform = filterDataProvider.streamingPlatforms?.firstWhere(
+                    (p) => p.name == channel,
+                orElse: () => StreamingPlatform(),
               );
 
-              // Find the platform data to get the logo
-              final platform = filterDataProvider.streamingPlatforms
-                  ?.firstWhere(
-                    (p) => p.name == channel,
-                    orElse: () => StreamingPlatform(),
-                  );
-
-              return ListTile(
-                leading: platform?.logo != null
-                    ? CircleAvatar(
-                        backgroundImage: NetworkImage(platform!.logo!),
-                        radius: 20,
-                      )
-                    : CircleAvatar(
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        radius: 20,
-                        child: Icon(
-                          Icons.tv,
-                          color: AppColors.primary,
-                          size: 20,
-                        ),
-                      ),
-                title: Text(channel),
-                trailing: Checkbox(
-                  value: isSelected,
-                  onChanged: (value) {
-                    if (isSelected) {
-                      filterDataProvider.removeChannel(channel);
-                    } else {
-                      filterDataProvider.addChannel(channel);
-                    }
-                  },
-                  activeColor: Colors.blue,
-                  checkColor: Colors.white,
-                ),
+              return InkWell(
                 onTap: () {
                   if (isSelected) {
                     filterDataProvider.removeChannel(channel);
@@ -723,6 +698,68 @@ class _FilterScreenState extends State<FilterScreen> {
                     filterDataProvider.addChannel(channel);
                   }
                 },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Row(
+                    children: [
+                      // Checkbox
+                      Checkbox(
+                        value: isSelected,
+                        onChanged: (value) {
+                          if (isSelected) {
+                            filterDataProvider.removeChannel(channel);
+                          } else {
+                            filterDataProvider.addChannel(channel);
+                          }
+                        },
+                        activeColor: Colors.blue,
+                        checkColor: Colors.white,
+                      ),
+
+                      // Logo
+                      Container(
+                        width: 40,
+                        height: 40,
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.card,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: platform?.logo != null
+                              ? Image.network(
+                            platform!.logo!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                Icons.tv,
+                                color: AppColors.primary,
+                                size: 20,
+                              );
+                            },
+                          )
+                              : Icon(
+                            Icons.tv,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+
+                      // Platform Name
+                      Expanded(
+                        child: Text(
+                          channel,
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           ),
@@ -730,6 +767,7 @@ class _FilterScreenState extends State<FilterScreen> {
       ],
     );
   }
+
 
   Widget _buildPreferenceSelector(FilterDataProvider filterDataProvider) {
     // Generate random colors for preferences

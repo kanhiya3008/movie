@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'StreamNest',
     'Feed',
     'Movies',
-    'Like',
+    'Movies Like',
     'Watch List',
   ];
 
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: _currentIndex == 0
             ? Image.asset(
                 'assets/Streamnest-01.png',
-                height: 32,
+                height: 40,
                 fit: BoxFit.contain,
               )
             : Text(
@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Sign Up Button
           Container(
-            margin: const EdgeInsets.only(right: 8),
+            margin: const EdgeInsets.only(right: 10),
             child: ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -90,17 +90,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 backgroundColor: AppColors.primary,
                 foregroundColor: AppColors.textInverse,
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+                  horizontal: 12,
+                  vertical: 4,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 elevation: 2,
               ),
               child: Text(
                 'Sign Up',
-                style: AppTypography.labelMedium.copyWith(
+                style: AppTypography.labelSmall.copyWith(
                   fontWeight: FontConstants.semiBold,
                 ),
               ),
@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     _buildDrawerItem(
                       icon: Icons.favorite,
-                      title: 'Like',
+                      title: 'Movies Like',
                       index: 3,
                     ),
                     _buildDrawerItem(
@@ -594,7 +594,7 @@ class _HomeContentState extends State<HomeContent>
             child: SlideTransition(
               position: _slideAnimation,
               child: Container(
-                margin: const EdgeInsets.only(bottom: 16),
+                margin: const EdgeInsets.only(bottom: 12),
                 child: SectionHeader(
                   title: skeletonCollections[i],
                   subtitle: 'Loading...',
@@ -607,7 +607,7 @@ class _HomeContentState extends State<HomeContent>
           // Movies Grid Skeleton
           Container(
             height: 300,
-            margin: const EdgeInsets.only(bottom: 32),
+            margin: const EdgeInsets.only(bottom: 10),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: 6, // Show 6 skeleton cards
@@ -675,7 +675,7 @@ class _HomeContentState extends State<HomeContent>
                       right: 16,
                       left: index == 0 ? 0 : 0,
                     ),
-                    child: _buildEnhancedMovieCard(movie, index),
+                     child: _buildEnhancedMovieCard(movie, index),
                   );
                 },
               ),
@@ -827,7 +827,7 @@ class _HomeContentState extends State<HomeContent>
             opacity: value,
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
@@ -837,7 +837,7 @@ class _HomeContentState extends State<HomeContent>
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: BorderRadius.circular(10),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -887,7 +887,7 @@ class _HomeContentState extends State<HomeContent>
                                                   color: AppColors.card,
                                                   child: const Icon(
                                                     Icons.movie,
-                                                    size: 40,
+                                                    size: 20,
                                                     color:
                                                         AppColors.textTertiary,
                                                   ),
@@ -898,7 +898,7 @@ class _HomeContentState extends State<HomeContent>
                                           color: AppColors.card,
                                           child: const Icon(
                                             Icons.movie,
-                                            size: 40,
+                                            size: 20,
                                             color: AppColors.textTertiary,
                                           ),
                                         ),
@@ -966,18 +966,19 @@ class _HomeContentState extends State<HomeContent>
 
                                 // Play button overlay
                                 Positioned(
-                                  top: 8,
-                                  right: 8,
+                                  top: 5,
+                                  right: 5,
                                   child: Container(
-                                    padding: const EdgeInsets.all(8),
+                                    padding: const EdgeInsets.all(4),
                                     decoration: BoxDecoration(
                                       color: Colors.black45,
-
+                                      borderRadius: BorderRadius.circular(4),
                                       boxShadow: [
+
                                         BoxShadow(
                                           color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 4,
-                                          offset: const Offset(0, 2),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 1),
                                         ),
                                       ],
                                     ),
@@ -1200,7 +1201,7 @@ class _HomeContentState extends State<HomeContent>
         ? 4.0
         : screenWidth < 600
         ? 6.0
-        : 10.0;
+        : 18.0;
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
@@ -1216,7 +1217,7 @@ class _HomeContentState extends State<HomeContent>
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(10.0),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: SingleChildScrollView(
@@ -1262,7 +1263,7 @@ class _HomeContentState extends State<HomeContent>
               children: [
                 // Movie poster shimmer
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.4,
+                  height: MediaQuery.of(context).size.height * 0.6,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     color: AppColors.card.withOpacity(0.7),
