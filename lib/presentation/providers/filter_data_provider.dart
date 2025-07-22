@@ -17,7 +17,7 @@ class FilterDataProvider extends ChangeNotifier {
   List<String> _otherFactorsOrder = [];
 
   FilterDataProvider({StreamNestApiService? apiService})
-    : _apiService = apiService ?? StreamNestApiService();
+      : _apiService = apiService ?? StreamNestApiService();
 
   // API Data Getters
   FilterModelResponse? get filterData => _filterData;
@@ -49,9 +49,13 @@ class FilterDataProvider extends ChangeNotifier {
         print(
           'Filter data loaded successfully: ${_filterData?.data?.genres?.length ?? 0} genres',
         );
+        
+        final detectedCode = _filterData?.data?.detectedCountryCode;
+        if (detectedCode != null && detectedCode.isNotEmpty) {
+          _selectedRegion = detectedCode;
+        }
       } else {
         _error = 'Failed to load filter data: ${response.statusCode}';
-        print('Error loading filter data: ${response.statusCode}');
       }
     } catch (e) {
       _error = 'Error loading filter data: $e';
@@ -204,7 +208,7 @@ class FilterDataProvider extends ChangeNotifier {
   // Check if user has any preferences
   bool get hasPreferences =>
       _selectedRegion != null ||
-      _selectedChannels.isNotEmpty ||
-      _preferenceOrder.isNotEmpty ||
-      _otherFactorsOrder.isNotEmpty;
+          _selectedChannels.isNotEmpty ||
+          _preferenceOrder.isNotEmpty ||
+          _otherFactorsOrder.isNotEmpty;
 }
