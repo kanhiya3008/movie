@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:streamnest/data/models/searchModel.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/font_constants.dart';
+import 'package:dio/dio.dart';
+import 'package:streamnest/presentation/screens/movie_details_screen.dart';
+import 'package:streamnest/presentation/screens/search_results_screen.dart';
+
+// --- Models ---
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -15,7 +21,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   bool _isSearching = false;
-  List<Map<String, dynamic>> _searchResults = [];
+  SearchModel? _searchResults;
 
   @override
   void dispose() {
@@ -23,47 +29,29 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  void _performSearch(String query) {
+  Future<void> _performSearch(String query) async {
     setState(() {
-      _searchQuery = query;
       _isSearching = true;
     });
-
-    // Simulate search delay
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
+    try {
+      final response = await Dio().get(
+        'https://api.streamnest.tv/movies/search?query=$query',
+      );
+      if (response.statusCode == 200) {
         setState(() {
-          _isSearching = false;
-          // Mock search results
-          _searchResults = [
-            {
-              'title': 'The Dark Knight',
-              'type': 'Movie',
-              'year': '2008',
-              'rating': '9.0',
-              'image':
-                  'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
-            },
-            {
-              'title': 'Breaking Bad',
-              'type': 'TV Show',
-              'year': '2008-2013',
-              'rating': '9.5',
-              'image':
-                  'https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg',
-            },
-            {
-              'title': 'Inception',
-              'type': 'Movie',
-              'year': '2010',
-              'rating': '8.8',
-              'image':
-                  'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',
-            },
-          ];
+          _searchResults = SearchModel.fromJson(response.data);
         });
       }
-    });
+    } catch (e) {
+      // handle error
+      setState(() {
+        _searchResults = null;
+      });
+    } finally {
+      setState(() {
+        _isSearching = false;
+      });
+    }
   }
 
   @override
@@ -93,11 +81,14 @@ class _SearchScreenState extends State<SearchScreen> {
             child: TextField(
               controller: _searchController,
               onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
                 if (value.length >= 3) {
                   _performSearch(value);
                 } else {
                   setState(() {
-                    _searchResults.clear();
+                    _searchResults = null;
                   });
                 }
               },
@@ -117,7 +108,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           _searchController.clear();
                           setState(() {
                             _searchQuery = '';
-                            _searchResults.clear();
+                            _searchResults = null;
                           });
                         },
                       )
@@ -136,7 +127,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ),
                 filled: true,
-                fillColor: AppColors.card,
+                fillColor: AppColors.containerColor,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
@@ -153,25 +144,220 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildSearchResults() {
-    if (_searchQuery.isEmpty) {
-      return _buildEmptyState();
-    }
+    if (_searchQuery.isEmpty) return _buildEmptyState();
+    if (_isSearching) return _buildLoadingState();
+    if (_searchResults == null) return _buildNoResultsState();
 
-    if (_isSearching) {
-      return _buildLoadingState();
-    }
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Movies Row
+          if (_searchResults!.movies.isNotEmpty) ...[
+            Text(
+              'Movies',
+              style: AppTypography.titleMedium.copyWith(
+                fontWeight: FontConstants.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.28,
+              child: ListView.separated(
+                padding: const EdgeInsets.only(bottom: 4),
+                scrollDirection: Axis.horizontal,
+                itemCount: _searchResults!.movies.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final movie = _searchResults!.movies[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MovieDetailsScreen(movie: movie),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      // width: 110,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 4,
+                        horizontal: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              movie.posterPath,
+                              // width: 100,
+                              height: MediaQuery.of(context).size.height * 0.21,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                width: 100,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.21,
+                                color: AppColors.card,
+                                child: const Icon(Icons.movie, size: 40),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            width: 100,
+                            child: Text(
+                              movie.title,
+                              style: AppTypography.bodySmall.copyWith(
+                                fontWeight: FontConstants.semiBold,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
 
-    if (_searchResults.isEmpty) {
-      return _buildNoResultsState();
-    }
+          // Cast Row
+          if (_searchResults!.castMembers.isNotEmpty) ...[
+            const SizedBox(height: 28),
+            Text(
+              'Cast',
+              style: AppTypography.titleMedium.copyWith(
+                fontWeight: FontConstants.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.12,
+              child: ListView.separated(
+                padding: const EdgeInsets.only(bottom: 4),
+                scrollDirection: Axis.horizontal,
+                itemCount: _searchResults!.castMembers.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 16),
+                itemBuilder: (context, index) {
+                  final cast = _searchResults!.castMembers[index];
+                  return Container(
+                    //  width: 70,
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 28,
+                          backgroundImage:
+                              cast.profilePath != null &&
+                                  cast.profilePath!.isNotEmpty
+                              ? NetworkImage(cast.profilePath!)
+                              : null,
+                          child:
+                              (cast.profilePath == null ||
+                                  cast.profilePath!.isEmpty)
+                              ? const Icon(Icons.person, size: 28)
+                              : null,
+                        ),
+                        const SizedBox(height: 4),
+                        SizedBox(
+                          width: 60,
+                          child: Text(
+                            cast.name,
+                            style: AppTypography.labelSmall,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: _searchResults.length,
-      itemBuilder: (context, index) {
-        final result = _searchResults[index];
-        return _buildSearchResultCard(result);
-      },
+          // Tags Row
+          if (_searchResults!.tags.isNotEmpty) ...[
+            const SizedBox(height: 28),
+            Text(
+              'Tags',
+              style: AppTypography.titleMedium.copyWith(
+                fontWeight: FontConstants.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: _searchResults!.tags.map((tag) {
+                return Chip(
+                  label: Text(tag),
+                  backgroundColor: AppColors.primary.withOpacity(0.1),
+                  labelStyle: AppTypography.labelSmall.copyWith(
+                    color: AppColors.primary,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 2,
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+          if (_searchResults!.movies.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            // See All Movies Button
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          SearchResultsScreen(searchQuery: _searchQuery),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.textInverse,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 2,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'See All Movies',
+                      style: AppTypography.titleMedium.copyWith(
+                        fontWeight: FontConstants.semiBold,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward, size: 18),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 

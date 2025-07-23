@@ -4,6 +4,7 @@ import 'package:streamnest/core/utils/constFunction.dart';
 import 'package:streamnest/data/models/movie.dart';
 import 'package:streamnest/presentation/providers/movie_provider.dart';
 import 'package:streamnest/presentation/screens/heroShimmerEffect.dart';
+import 'package:streamnest/presentation/screens/movie_details_screen.dart';
 import 'package:streamnest/presentation/theme/app_colors.dart';
 import 'package:streamnest/presentation/theme/app_typography.dart';
 import 'package:streamnest/presentation/widgets/movie_card.dart';
@@ -194,13 +195,24 @@ Widget buildMovieTab(
                         Row(
                           children: [
                             Expanded(
-                              child: Text(
-                                movie.title,
-                                style: AppTypography.bodyMedium.copyWith(
-                                  fontWeight: FontConstants.bold,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          MovieDetailsScreen(movie: movie),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  movie.title,
+                                  style: AppTypography.bodyMedium.copyWith(
+                                    fontWeight: FontConstants.bold,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             SizedBox(
@@ -249,7 +261,7 @@ Widget buildMovieTab(
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
+                                horizontal: 12,
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
@@ -321,9 +333,8 @@ Widget buildMovieTab(
                             // Seen Container
                             Expanded(
                               child: Container(
-                                margin: const EdgeInsets.symmetric(vertical: 6) ,
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 6,
+                                  vertical: 5,
                                   horizontal: 5,
                                 ),
                                 decoration: BoxDecoration(
@@ -337,7 +348,7 @@ Widget buildMovieTab(
                                   children: [
                                     Icon(
                                       Icons.visibility,
-                                      size: 14,
+                                      size: 12,
                                       color: AppColors.textPrimary,
                                     ),
                                     const SizedBox(height: 4),
@@ -354,7 +365,7 @@ Widget buildMovieTab(
                             Expanded(
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 6,
+                                  vertical: 5,
                                   horizontal: 5,
                                 ),
                                 decoration: BoxDecoration(
@@ -367,8 +378,8 @@ Widget buildMovieTab(
                                 child: Column(
                                   children: [
                                     Icon(
-                                      Icons.close,
-                                      size: 14,
+                                      Icons.favorite_border,
+                                      size: 12,
                                       color: AppColors.textPrimary,
                                     ),
                                     const SizedBox(height: 4),
@@ -385,7 +396,7 @@ Widget buildMovieTab(
                             Expanded(
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 6,
+                                  vertical: 5,
                                   horizontal: 5,
                                 ),
                                 decoration: BoxDecoration(
@@ -399,7 +410,7 @@ Widget buildMovieTab(
                                   children: [
                                     Icon(
                                       Icons.bookmark_border,
-                                      size: 14,
+                                      size: 12,
                                       color: AppColors.textPrimary,
                                     ),
                                     const SizedBox(height: 4),
@@ -414,7 +425,7 @@ Widget buildMovieTab(
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
               // // Action Buttons
               Row(
                 children: [
@@ -444,13 +455,14 @@ Widget buildMovieTab(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xff4d7fff),
                         foregroundColor: AppColors.textInverse,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                     ),
                   ),
+
                   SizedBox(
                     width: MediaQuery.of(context).size.width < 360 ? 8 : 12,
                   ),
@@ -472,7 +484,7 @@ Widget buildMovieTab(
                         backgroundColor: AppColors.containerColor,
                         foregroundColor: AppColors.textPrimary,
                         side: const BorderSide(color: AppColors.primary),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -498,7 +510,7 @@ Widget buildMovieTab(
                       _showCastBottomSheet(context, movie);
                     },
                     child: SizedBox(
-                      height: 60,
+                      height: 80,
                       width: MediaQuery.of(context).size.width / 2.4,
 
                       child: Stack(
@@ -525,8 +537,8 @@ Widget buildMovieTab(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: AppColors.primaryLight,
-                                    width: 2,
+                                    color: AppColors.background,
+                                    width: 3,
                                   ),
                                 ),
                                 child: CircleAvatar(
@@ -534,8 +546,8 @@ Widget buildMovieTab(
                                       MediaQuery.of(context).size.width < 360
                                       ? 25
                                       : MediaQuery.of(context).size.width < 480
-                                      ? 25
-                                      : 25,
+                                      ? 28
+                                      : 32,
                                   backgroundColor: AppColors.primaryLight,
                                   child: castMember.person.profilePath != null
                                       ? ClipOval(
@@ -592,11 +604,10 @@ Widget buildMovieTab(
                                           ),
                                         )
                                       : Text(
-                                    castMember.person.name.isNotEmpty
-                                        ? (castMember.person.name.length >= 2
-                                        ? castMember.person.name.substring(0, 2).toUpperCase()
-                                        : castMember.person.name.toUpperCase())
-                                        : '?',
+                                          castMember.person.name.isNotEmpty
+                                              ? castMember.person.name[0]
+                                                    .toUpperCase()
+                                              : '?',
                                           style: AppTypography.labelMedium
                                               .copyWith(
                                                 color: AppColors.textPrimary,
@@ -610,7 +621,7 @@ Widget buildMovieTab(
                           }),
 
                           // +X remaining indicator
-                          if (movie.cast.length > 2)
+                          if (movie.cast.length > 3)
                             Positioned(
                               left: MediaQuery.of(context).size.width < 360
                                   ? 96.0
@@ -621,8 +632,8 @@ Widget buildMovieTab(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: AppColors.primaryLight,
-                                    width: 2,
+                                    color: AppColors.background,
+                                    width: 3,
                                   ),
                                 ),
                                 child: CircleAvatar(
@@ -630,8 +641,8 @@ Widget buildMovieTab(
                                       MediaQuery.of(context).size.width < 360
                                       ? 25
                                       : MediaQuery.of(context).size.width < 480
-                                      ? 25
-                                      : 25,
+                                      ? 28
+                                      : 32,
                                   backgroundColor: AppColors.primaryLight,
                                   child: Text(
                                     '+${movie.cast.length - 3}',
@@ -649,6 +660,7 @@ Widget buildMovieTab(
                   ),
                 ],
 
+                // Streaming OTT Platforms - Right Side
                 if ((movie.streamingPlatforms ?? []).isNotEmpty) ...[
                   const SizedBox(width: 16),
                   Expanded(
@@ -660,58 +672,91 @@ Widget buildMovieTab(
                             key: const PageStorageKey('streaming_platforms'),
                             controller: streamingScrollController,
                             scrollDirection: Axis.horizontal,
-                            reverse: true,
+                            reverse: true, // Show from right to left
                             itemCount: (movie.streamingPlatforms ?? []).length,
                             itemBuilder: (context, index) {
-                              final platform = (movie.streamingPlatforms ?? [])[index];
+                              final platform =
+                                  (movie.streamingPlatforms ?? [])[index];
                               return Container(
-                                width: 40,
-                                height: 60, // Increased height
-                                padding: const EdgeInsets.all(3),
+                                width: 50,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(
+                                    color: AppColors.primary.withOpacity(0.2),
+                                    width: 1,
+                                  ),
+                                ),
+                                padding: const EdgeInsets.all(4),
                                 child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     // Platform Icon
                                     Container(
-                                      width: 35,
-                                      height: 45, // Reduced to fit text below
+                                      width: 40,
+                                      height: 40,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(4),
+                                        border: Border.all(
+                                          color: AppColors.primary.withOpacity(
+                                            0.3,
+                                          ),
+                                          width: 1,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.1,
+                                            ),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
                                       ),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(4),
-                                        child: platform.platform?.logo != null &&
-                                            platform.platform!.logo.isNotEmpty
+                                        child:
+                                            platform.platform?.logo != null &&
+                                                platform
+                                                    .platform!
+                                                    .logo
+                                                    .isNotEmpty
                                             ? Image.network(
-                                          platform.platform!.logo,
-                                          fit: BoxFit.contain,
-                                          errorBuilder: (context, error, stackTrace) {
-                                            return Container(
-                                              color: AppColors.primary.withOpacity(0.1),
-                                              child: Center(
-                                                child: Icon(
-                                                  Icons.tv,
-                                                  size: 20,
-                                                  color: AppColors.primary,
+                                                platform.platform!.logo,
+                                                fit: BoxFit.contain,
+                                                errorBuilder:
+                                                    (
+                                                      context,
+                                                      error,
+                                                      stackTrace,
+                                                    ) {
+                                                      return Container(
+                                                        color: AppColors.primary
+                                                            .withOpacity(0.1),
+                                                        child: Center(
+                                                          child: Icon(
+                                                            Icons.tv,
+                                                            size: 20,
+                                                            color: AppColors
+                                                                .primary,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                              )
+                                            : Container(
+                                                color: AppColors.primary
+                                                    .withOpacity(0.1),
+                                                child: Center(
+                                                  child: Icon(
+                                                    Icons.tv,
+                                                    size: 20,
+                                                    color: AppColors.primary,
+                                                  ),
                                                 ),
                                               ),
-                                            );
-                                          },
-                                        )
-                                            : Container(
-                                          color: AppColors.primary.withOpacity(0.1),
-                                          child: Center(
-                                            child: Icon(
-                                              Icons.tv,
-                                              size: 20,
-                                              color: AppColors.primary,
-                                            ),
-                                          ),
-                                        ),
                                       ),
                                     ),
-                                    const SizedBox(height: 2),
+                                    const SizedBox(height: 4),
                                     // Platform Type Text
                                     Text(
                                       (platform.type ?? '').isNotEmpty
@@ -730,7 +775,6 @@ Widget buildMovieTab(
                               );
                             },
                           ),
-
                           // Arrow Button - Right Side
                           Positioned(
                             right: 0,
@@ -738,18 +782,22 @@ Widget buildMovieTab(
                             bottom: 0,
                             child: Container(
                               width: 30,
+
                               child: Center(
                                 child: Container(
                                   width: 24,
-                                  height: 60,
-                                  decoration: const BoxDecoration(
+                                  height: 80,
+                                  decoration: BoxDecoration(
                                     color: Colors.black45,
                                   ),
                                   child: IconButton(
                                     onPressed: () {
+                                      // Scroll to the left (show more platforms since ListView is reversed)
                                       streamingScrollController.animateTo(
                                         streamingScrollController.offset - 100,
-                                        duration: const Duration(milliseconds: 300),
+                                        duration: const Duration(
+                                          milliseconds: 300,
+                                        ),
                                         curve: Curves.easeInOut,
                                       );
                                     },
@@ -770,46 +818,31 @@ Widget buildMovieTab(
                     ),
                   ),
                 ],
-
               ],
             ),
           ],
 
-          SizedBox(height: MediaQuery.of(context).size.width < 360 ? 4 : 6),
+          SizedBox(height: MediaQuery.of(context).size.width < 360 ? 12 : 16),
 
           // Description
-          movie.description.trim().isNotEmpty
-              ? Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Why you might like this',
-                style: AppTypography.bodyMedium1.copyWith(
-                  fontWeight: FontConstants.bold,
-                ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.width < 360 ? 4 : 6),
-              buildDescriptionSection(movie.description),
-            ],
-          )
-              : const SizedBox.shrink(),
+          Text(
+            'Why you might like this',
+            style: AppTypography.bodyMedium1.copyWith(
+              fontWeight: FontConstants.bold,
+            ),
+          ),
+          SizedBox(height: MediaQuery.of(context).size.width < 360 ? 6 : 8),
+          buildDescriptionSection(movie.description),
 
-          movie.description.trim().isNotEmpty
-              ? Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: MediaQuery.of(context).size.width < 360 ? 4 : 6),
-              Text(
-                'Synopsis',
-                style: AppTypography.bodyMedium1.copyWith(
-                  fontWeight: FontConstants.bold,
-                ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.width < 360 ? 4 : 6),
-              buildDescriptionSection(movie.description),
-            ],
-          )
-              : const SizedBox.shrink(),
+          SizedBox(height: MediaQuery.of(context).size.width < 360 ? 16 : 24),
+          Text(
+            'Synopsis',
+            style: AppTypography.bodyMedium1.copyWith(
+              fontWeight: FontConstants.bold,
+            ),
+          ),
+          SizedBox(height: MediaQuery.of(context).size.width < 360 ? 6 : 8),
+          buildDescriptionSection(movie.description),
 
           // // Genres
           // if (movie.collections.isNotEmpty) ...[
@@ -1498,7 +1531,7 @@ Widget buildDescriptionSection(String description) {
         text:
             description ??
             "Log in to see why our AI thinks you'll love this, based on your past movie choices and preferences.",
-        style: AppTypography.bodySmall.copyWith(
+        style: AppTypography.bodyMedium.copyWith(
           color: AppColors.textSecondary,
           height: 1.5,
         ),
@@ -1526,15 +1559,15 @@ Widget buildDescriptionSection(String description) {
           children: [
             Text(
               description,
-              style: AppTypography.bodySmall.copyWith(
+              style: AppTypography.bodyMedium1.copyWith(
                 color: AppColors.textSecondary,
-                height: 1.3,
+                height: 1.5,
               ),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
             if (isTextOverflowing) ...[
-              const SizedBox(height: 6),
+              const SizedBox(height: 8),
               GestureDetector(
                 onTap: () => showFullDescription(description, context),
                 child: Text(

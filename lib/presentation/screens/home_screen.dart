@@ -457,6 +457,8 @@ class _HomeContentState extends State<HomeContent>
           );
         }
 
+        final ottScrollController = ScrollController();
+
         return CustomScrollView(
           slivers: [
             // Filter List Widget
@@ -666,17 +668,64 @@ class _HomeContentState extends State<HomeContent>
               margin: const EdgeInsets.only(bottom: 32),
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: collection.movies.length,
+                itemCount:
+                    collection.movies.length + 1, // +1 for View More card
                 itemBuilder: (context, index) {
-                  final movie = collection.movies[index];
-                  return Container(
-                    width: MediaQuery.of(context).size.width * 0.35,
-                    margin: EdgeInsets.only(
-                      right: 16,
-                      left: index == 0 ? 0 : 0,
-                    ),
-                     child: _buildEnhancedMovieCard(movie, index),
-                  );
+                  if (index < collection.movies.length) {
+                    final movie = collection.movies[index];
+                    return Container(
+                      width: MediaQuery.of(context).size.width * 0.35,
+                      margin: EdgeInsets.only(
+                        right: 16,
+                        left: index == 0 ? 0 : 0,
+                      ),
+                      child: _buildEnhancedMovieCard(movie, index),
+                    );
+                  } else {
+                    // View More card
+                    return GestureDetector(
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'View all ${collection.collection.name}',
+                            ),
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.35,
+                        margin: const EdgeInsets.only(right: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.card,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: AppColors.primary.withOpacity(0.2),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Text(
+                            'View More →',
+                            style: AppTypography.titleMedium.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontConstants.semiBold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
                 },
               ),
             ),
@@ -968,24 +1017,419 @@ class _HomeContentState extends State<HomeContent>
                                 Positioned(
                                   top: 5,
                                   right: 5,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black45,
-                                      borderRadius: BorderRadius.circular(4),
-                                      boxShadow: [
-
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 1),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(20),
+                                          ),
                                         ),
-                                      ],
-                                    ),
-                                    child: const Icon(
-                                      Icons.play_arrow,
-                                      color: AppColors.textPrimary,
-                                      size: 16,
+                                        builder: (context) {
+                                          return Container(
+                                            height:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.height *
+                                                0.4,
+                                            padding: const EdgeInsets.all(16),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                // Top Row
+                                                Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        movie.title,
+                                                        style: AppTypography
+                                                            .titleMedium
+                                                            .copyWith(
+                                                              fontWeight:
+                                                                  FontConstants
+                                                                      .bold,
+                                                            ),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 10,
+                                                            vertical: 4,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color: AppColors.primary
+                                                            .withOpacity(0.1),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              8,
+                                                            ),
+                                                      ),
+                                                      child: Text(
+                                                        'Login to match',
+                                                        style: AppTypography
+                                                            .bodySmall
+                                                            .copyWith(
+                                                              color: AppColors
+                                                                  .primary,
+                                                              fontWeight:
+                                                                  FontConstants
+                                                                      .semiBold,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 15),
+                                                    InkWell(
+                                                      onTap: () {
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                      },
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets.all(
+                                                              10,
+                                                            ),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.black45,
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                4,
+                                                              ),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: Colors
+                                                                  .black
+                                                                  .withOpacity(
+                                                                    0.1,
+                                                                  ),
+                                                              blurRadius: 10,
+                                                              offset:
+                                                                  const Offset(
+                                                                    0,
+                                                                    1,
+                                                                  ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: const Icon(
+                                                          Icons.arrow_back,
+                                                          color: AppColors
+                                                              .textPrimary,
+                                                          size: 16,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 12),
+
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 6,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.black54,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          5,
+                                                        ),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.people,
+                                                        size: 16,
+                                                        color: Colors.white,
+                                                      ),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        '${movie.audienceRating}',
+                                                        style: AppTypography
+                                                            .labelMedium
+                                                            .copyWith(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontConstants
+                                                                      .semiBold,
+                                                            ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+
+                                                const SizedBox(height: 12),
+
+                                                // Scrollable Description
+                                                Expanded(
+                                                  child: SingleChildScrollView(
+                                                    child: Text(
+                                                      movie.description ??
+                                                          'No description available.',
+                                                      style: AppTypography
+                                                          .bodySmall
+                                                          .copyWith(
+                                                            color: AppColors
+                                                                .textSecondary,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 12),
+
+                                                // Bottom Row: Watch Trailer + OTT
+                                                Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Expanded(
+                                                      child: ElevatedButton.icon(
+                                                        onPressed: () {
+                                                          // Handle watch trailer
+                                                          if (movie.trailerYtId !=
+                                                                  null &&
+                                                              movie
+                                                                  .trailerYtId!
+                                                                  .isNotEmpty) {
+                                                            showYoutubePopup1(
+                                                              context,
+                                                              movie
+                                                                  .trailerYtId!,
+                                                            );
+                                                          } else {
+                                                            ScaffoldMessenger.of(
+                                                              context,
+                                                            ).showSnackBar(
+                                                              const SnackBar(
+                                                                content: Text(
+                                                                  'Trailer not available for this movie',
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }
+                                                        },
+                                                        label: Text(
+                                                          'Watch Trailer',
+                                                          style: AppTypography
+                                                              .bodyMedium1
+                                                              .copyWith(
+                                                                fontWeight:
+                                                                    FontConstants
+                                                                        .semiBold,
+                                                              ),
+                                                        ),
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              Color(0xff4d7fff),
+                                                          foregroundColor:
+                                                              AppColors
+                                                                  .textInverse,
+                                                          padding:
+                                                              const EdgeInsets.symmetric(
+                                                                vertical: 12,
+                                                              ),
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  8,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+
+                                                    const SizedBox(width: 10),
+                                                    if ((movie.streamingPlatforms ??
+                                                            [])
+                                                        .isNotEmpty) ...[
+                                                      Expanded(
+                                                        child: SizedBox(
+                                                          height: 80,
+                                                          child: ListView.builder(
+                                                            scrollDirection:
+                                                                Axis.horizontal,
+                                                            itemCount:
+                                                                (movie.streamingPlatforms ??
+                                                                        [])
+                                                                    .length,
+                                                            itemBuilder: (context, index) {
+                                                              final platform =
+                                                                  (movie
+                                                                      .streamingPlatforms ??
+                                                                  [])[index];
+                                                              return Container(
+                                                                width: 50,
+                                                                height: 80,
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                        6,
+                                                                      ),
+                                                                  border: Border.all(
+                                                                    color: AppColors
+                                                                        .primary
+                                                                        .withOpacity(
+                                                                          0.2,
+                                                                        ),
+                                                                    width: 1,
+                                                                  ),
+                                                                ),
+                                                                padding:
+                                                                    const EdgeInsets.all(
+                                                                      4,
+                                                                    ),
+                                                                child: Column(
+                                                                  children: [
+                                                                    // Platform Icon
+                                                                    Container(
+                                                                      width: 40,
+                                                                      height:
+                                                                          40,
+                                                                      decoration: BoxDecoration(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(
+                                                                              4,
+                                                                            ),
+                                                                        border: Border.all(
+                                                                          color: AppColors.primary.withOpacity(
+                                                                            0.3,
+                                                                          ),
+                                                                          width:
+                                                                              1,
+                                                                        ),
+                                                                        boxShadow: [
+                                                                          BoxShadow(
+                                                                            color: Colors.black.withOpacity(
+                                                                              0.1,
+                                                                            ),
+                                                                            blurRadius:
+                                                                                4,
+                                                                            offset: const Offset(
+                                                                              0,
+                                                                              2,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      child: ClipRRect(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(
+                                                                              4,
+                                                                            ),
+                                                                        child:
+                                                                            platform.platform?.logo !=
+                                                                                    null &&
+                                                                                platform.platform!.logo.isNotEmpty
+                                                                            ? Image.network(
+                                                                                platform.platform!.logo,
+                                                                                fit: BoxFit.contain,
+                                                                                errorBuilder:
+                                                                                    (
+                                                                                      context,
+                                                                                      error,
+                                                                                      stackTrace,
+                                                                                    ) {
+                                                                                      return Container(
+                                                                                        color: AppColors.primary.withOpacity(
+                                                                                          0.1,
+                                                                                        ),
+                                                                                        child: Center(
+                                                                                          child: Icon(
+                                                                                            Icons.tv,
+                                                                                            size: 20,
+                                                                                            color: AppColors.primary,
+                                                                                          ),
+                                                                                        ),
+                                                                                      );
+                                                                                    },
+                                                                              )
+                                                                            : Container(
+                                                                                color: AppColors.primary.withOpacity(
+                                                                                  0.1,
+                                                                                ),
+                                                                                child: Center(
+                                                                                  child: Icon(
+                                                                                    Icons.tv,
+                                                                                    size: 20,
+                                                                                    color: AppColors.primary,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height: 4,
+                                                                    ),
+                                                                    Text(
+                                                                      (platform.type ??
+                                                                                  '')
+                                                                              .isNotEmpty
+                                                                          ? '${platform.type![0].toUpperCase()}${platform.type!.substring(1).toLowerCase()}'
+                                                                          : '',
+                                                                      style: AppTypography.labelSmall.copyWith(
+                                                                        color: AppColors
+                                                                            .textSecondary,
+                                                                        fontSize:
+                                                                            10,
+                                                                      ),
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                      maxLines:
+                                                                          1,
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black45,
+                                        borderRadius: BorderRadius.circular(4),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.1,
+                                            ),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 1),
+                                          ),
+                                        ],
+                                      ),
+                                      child: const Icon(
+                                        Icons.play_arrow,
+                                        color: AppColors.textPrimary,
+                                        size: 16,
+                                      ),
                                     ),
                                   ),
                                 ),

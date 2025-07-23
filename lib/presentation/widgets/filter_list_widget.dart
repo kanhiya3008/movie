@@ -210,7 +210,8 @@ class _FilterListWidgetState extends State<FilterListWidget> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          categoryName,
+                          categoryName.replaceAll('V1', ''),
+
                           style: AppTypography.filterText.copyWith(
                             fontWeight: isSelected
                                 ? FontConstants.semiBold
